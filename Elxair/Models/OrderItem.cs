@@ -6,7 +6,11 @@
 
         public int OrderId { get; set; }
 
-        public int PerfumeId { get; set; }
+        public Order Order { get; set; }
+
+        public int PerfumeSizeId { get; set; }
+
+        public PerfumeSize PerfumeSize { get; set; }
 
         public int Quantity { get; set; }
 

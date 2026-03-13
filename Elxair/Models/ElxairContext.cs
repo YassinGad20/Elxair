@@ -14,9 +14,11 @@ namespace Elxair.Models
         }
         public DbSet<User> Users { get; set; }
 
+        public DbSet<Category> Categories { get; set; }
+
         public DbSet<Perfume> Perfumes { get; set; }
 
-        public DbSet<Category> Categories { get; set; }
+        public DbSet<PerfumeSize> PerfumeSizes { get; set; }
 
         public DbSet<Cart> Carts { get; set; }
 

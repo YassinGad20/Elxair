@@ -5,58 +5,116 @@ namespace Elxair.Controllers
 {
     public class AdminController : Controller
     {
+        AdminService adminService = new AdminService();
 
-        ProductService ps = new ProductService();
-        OrderService os = new OrderService();
-
-
+        // لوحة التحكم
         public IActionResult Dashboard()
         {
             return View();
         }
 
+        // عرض كل البرفانات
         public IActionResult Products()
         {
-            var perfumes = ps.GetAllPerfumes();
+            var perfumes = adminService.GetAllPerfumes();
             return View(perfumes);
         }
 
-        public IActionResult Create()
+        // صفحة إضافة برفان جديد
+        public IActionResult CreatePerfume()
         {
             return View();
         }
 
-        
-        public IActionResult Create(Perfume perfume)
+        // حفظ البرفان الجديد
+        [HttpPost]
+        public IActionResult CreatePerfume(Perfume perfume)
         {
-            ps.Add(perfume);
-            return RedirectToAction("Products");
-        }
-
-        public IActionResult Edit(int id)
-        {
-            var perfume = ps.GetById(id);
+            if (ModelState.IsValid)
+            {
+                adminService.AddPerfume(perfume);
+                return RedirectToAction("Products");
+            }
             return View(perfume);
         }
 
-        
-        public IActionResult Edit(Perfume perfume)
+        // صفحة تعديل برفان
+        public IActionResult EditPerfume(int id)
         {
-            ps.Update(perfume);
+            var perfume = adminService.GetAllPerfumes()
+                .FirstOrDefault(p => p.Id == id);
+
+            if (perfume == null)
+                return NotFound();
+
+            return View(perfume);
+        }
+
+        // حفظ تعديل البرفان
+        [HttpPost]
+        public IActionResult EditPerfume(Perfume perfume)
+        {
+            if (ModelState.IsValid)
+            {
+                adminService.UpdatePerfume(perfume);
+                return RedirectToAction("Products");
+            }
+            return View(perfume);
+        }
+
+        // حذف برفان
+        public IActionResult DeletePerfume(int id)
+        {
+            adminService.DeletePerfume(id);
             return RedirectToAction("Products");
         }
 
-        public IActionResult Delete(int id)
+        // إضافة حجم + سعر للبرفان
+        public IActionResult AddPerfumeSize(int perfumeId)
         {
-            ps.Delete(id);
-            return RedirectToAction("Products");
+            ViewBag.PerfumeId = perfumeId;
+            return View();
         }
 
-        public IActionResult GetAllOrders()
+        [HttpPost]
+        public IActionResult AddPerfumeSize(int perfumeId, string size, decimal price, int stock)
         {
-            var orders = os.GetAllOrders();
+            adminService.AddPerfumeSize(perfumeId, size, price, stock);
+            return RedirectToAction("EditPerfume", new { id = perfumeId });
+        }
+
+        // تعديل حجم البرفان
+        public IActionResult EditPerfumeSize(int sizeId)
+        {
+            var perfumeSize = adminService.GetAllPerfumes() // ممكن تعمل فانكشن جديد للـ Size
+                                .SelectMany(p => p.Sizes)
+                                .FirstOrDefault(s => s.Id == sizeId);
+
+            if (perfumeSize == null)
+                return NotFound();
+
+            return View(perfumeSize);
+        }
+
+        [HttpPost]
+        public IActionResult EditPerfumeSize(PerfumeSize size)
+        {
+            adminService.UpdatePerfumeSize(size);
+            return RedirectToAction("EditPerfume", new { id = size.PerfumeId });
+        }
+
+        // عرض كل الأوردرات
+        public IActionResult Orders()
+        {
+            var orders = adminService.GetAllOrders();
             return View(orders);
         }
 
+        // تحديث حالة الأوردر
+        public IActionResult UpdateOrderStatus(int orderId, string status)
+        {
+            adminService.UpdateOrderStatus(orderId, status);
+            return RedirectToAction("Orders");
+        }
     }
 }

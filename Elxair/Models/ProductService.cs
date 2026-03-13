@@ -1,39 +1,52 @@
-﻿namespace Elxair.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Elxair.Models
 {
     public class ProductService
     {
         ElxairContext db = new ElxairContext();
 
-
         public List<Perfume> GetAllPerfumes()
         {
-            return db.Perfumes.ToList();
+            return db.Perfumes
+                .Include(p => p.Sizes)
+                .ToList();
         }
 
-        public Perfume GetById(int id)
+        public Perfume GetPerfume(int id)
         {
-            return db.Perfumes.Find(id);
+            return db.Perfumes
+                .Include(p => p.Sizes)
+                .FirstOrDefault(p => p.Id == id);
         }
 
-        public void Add(Perfume perfume)
+        public void AddPerfume(Perfume perfume)
         {
             db.Perfumes.Add(perfume);
             db.SaveChanges();
         }
 
-        public void Update(Perfume perfume)
+        public void AddPerfumeSize(int perfumeId, string size, decimal price, int stock)
         {
-            db.Perfumes.Update(perfume);
+            var perfumeSize = new PerfumeSize
+            {
+                PerfumeId = perfumeId,
+                Size = size,
+                Price = price,
+                Stock = stock
+            };
+
+            db.PerfumeSizes.Add(perfumeSize);
             db.SaveChanges();
         }
 
-        public void Delete(int id)
+        public void DeletePerfume(int id)
         {
-            var p = db.Perfumes.Find(id);
-            db.Perfumes.Remove(p);
+            var perfume = db.Perfumes.Find(id);
+
+            db.Perfumes.Remove(perfume);
             db.SaveChanges();
         }
-
 
     }
 }

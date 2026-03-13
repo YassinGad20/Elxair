@@ -6,11 +6,13 @@
 
         public int CartId { get; set; }
 
-        public int PerfumeId { get; set; }
+        public Cart Cart { get; set; }
+
+        public int PerfumeSizeId { get; set; }
+
+        public PerfumeSize PerfumeSize { get; set; }
 
         public int Quantity { get; set; }
-
-        public Perfume Perfume { get; set; }
 
     }
 }

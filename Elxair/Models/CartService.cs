@@ -1,76 +1,65 @@
-﻿namespace Elxair.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Elxair.Models
 {
 
     public class CartService
     {
         ElxairContext db = new ElxairContext();
-        public void AddToCart(int userId, int perfumeId, int quantity)
+
+
+        public void AddToCart(int userId, int perfumeSizeId, int quantity)
         {
-            
             var cart = db.Carts.FirstOrDefault(c => c.UserId == userId);
 
-            
             if (cart == null)
             {
-                cart = new Cart
-                {
-                    UserId = userId,
-                    Items = new List<CartItem>()
-                };
+                cart = new Cart { UserId = userId };
                 db.Carts.Add(cart);
-                db.SaveChanges(); 
+                db.SaveChanges();
             }
 
-           
-            var cartItem = db.CartItems
-                             .FirstOrDefault(ci => ci.CartId == cart.Id && ci.PerfumeId == perfumeId);
+            var item = db.CartItems
+                .FirstOrDefault(i => i.CartId == cart.Id && i.PerfumeSizeId == perfumeSizeId);
 
-            if (cartItem != null)
+            if (item != null)
             {
-                
-                cartItem.Quantity += quantity;
-                db.CartItems.Update(cartItem);
+                item.Quantity += quantity;
             }
             else
             {
-                
-                cartItem = new CartItem
+                item = new CartItem
                 {
                     CartId = cart.Id,
-                    PerfumeId = perfumeId,
+                    PerfumeSizeId = perfumeSizeId,
                     Quantity = quantity
                 };
-                db.CartItems.Add(cartItem);
+
+                db.CartItems.Add(item);
             }
 
             db.SaveChanges();
-
         }
 
         public void RemoveFromCart(int itemId)
         {
-            var cartItem = db.CartItems.FirstOrDefault(ci => ci.Id == itemId);
+            var item = db.CartItems.Find(itemId);
 
-            if (cartItem != null)
+            if (item != null)
             {
-                db.CartItems.Remove(cartItem);
+                db.CartItems.Remove(item);
                 db.SaveChanges();
             }
-
         }
 
         public List<CartItem> GetUserCart(int userId)
         {
-
-            var cart = db.Carts.FirstOrDefault(c => c.UserId == userId);
-
-            if (cart == null)
-                return new List<CartItem>();
-
-            return db.CartItems
-                     .Where(ci => ci.CartId == cart.Id)
-                     .ToList();
-
+            return db.Carts
+                .Where(c => c.UserId == userId)
+                .SelectMany(c => c.Items)
+                .Include(i => i.PerfumeSize)
+                .ThenInclude(p => p.Perfume)
+                .ToList();
         }
 
     }

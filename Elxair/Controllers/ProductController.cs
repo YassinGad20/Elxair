@@ -5,17 +5,23 @@ namespace Elxair.Controllers
 {
     public class ProductController : Controller
     {
+        ProductService ps = new ProductService();
+
+        // عرض كل البرفانات للمستخدم
         public IActionResult Index()
         {
-            ProductService ps = new ProductService();
-            List<Perfume> perfumes = ps.GetAllPerfumes();
-            return View( perfumes);
+            var perfumes = ps.GetAllPerfumes();
+            return View(perfumes);
         }
 
-        public IActionResult PerfumeDetails (int id)
+        // تفاصيل البرفان + الأحجام
+        public IActionResult Details(int id)
         {
-            ProductService ps = new ProductService();
-            Perfume perfume = ps.GetById(id);
+            var perfume = ps.GetPerfume(id);
+
+            if (perfume == null)
+                return NotFound();
+
             return View(perfume);
         }
     }
