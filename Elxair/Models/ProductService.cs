@@ -9,13 +9,15 @@ namespace Elxair.Models
         public List<Perfume> GetAllPerfumes()
         {
             return db.Perfumes
+                .Include(p => p.Category)
                 .Include(p => p.Sizes)
                 .ToList();
         }
 
-        public Perfume GetPerfume(int id)
+        public Perfume? GetPerfume(int id)
         {
             return db.Perfumes
+                .Include(p => p.Category)
                 .Include(p => p.Sizes)
                 .FirstOrDefault(p => p.Id == id);
         }
@@ -26,12 +28,12 @@ namespace Elxair.Models
             db.SaveChanges();
         }
 
-        public void AddPerfumeSize(int perfumeId, string size, decimal price, int stock)
+        public void AddPerfumeSize(int perfumeId, string sizeName, decimal price, int stock)
         {
             var perfumeSize = new PerfumeSize
             {
                 PerfumeId = perfumeId,
-                Size = size,
+                Size = sizeName,
                 Price = price,
                 Stock = stock
             };
@@ -42,11 +44,20 @@ namespace Elxair.Models
 
         public void DeletePerfume(int id)
         {
-            var perfume = db.Perfumes.Find(id);
+            var perfume = db.Perfumes
+                .Include(p => p.Sizes)
+                .FirstOrDefault(p => p.Id == id);
 
-            db.Perfumes.Remove(perfume);
-            db.SaveChanges();
+            if (perfume != null)
+            {
+                if (perfume.Sizes != null && perfume.Sizes.Any())
+                {
+                    db.PerfumeSizes.RemoveRange(perfume.Sizes);
+                }
+
+                db.Perfumes.Remove(perfume);
+                db.SaveChanges();
+            }
         }
-
     }
 }

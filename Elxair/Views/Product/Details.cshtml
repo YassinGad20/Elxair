@@ -1,0 +1,78 @@
+﻿@model Elxair.Models.Perfume
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<section class="elx-section">
+    <div class="row g-5 align-items-start">
+        <div class="col-lg-5">
+            <div class="elx-card" style="overflow:hidden;">
+                <img src="@Model.ImageUrl" alt="@Model.Name" class="elx-card-img" style="height:520px;" />
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="elx-badge mb-3">
+                @(Model.Category != null ? Model.Category.Name : "Perfume")
+            </div>
+
+            <h1 style="font-family:'Playfair Display',serif;font-size:3rem;color:#2c1712;margin-bottom:12px;">
+                @Model.Name
+            </h1>
+
+            <p style="font-size:0.9rem;letter-spacing:2px;text-transform:uppercase;color:var(--brown-3);margin-bottom:20px;">
+                @Model.Brand
+            </p>
+
+            <p style="font-size:1rem;color:#5c3d35;line-height:1.9;max-width:650px;">
+                @Model.Description
+            </p>
+
+            <hr class="elx-divider my-4" />
+
+            <h4 style="font-family:'Playfair Display',serif;color:#3a2018;margin-bottom:16px;">
+                Available Sizes
+            </h4>
+
+            @if (Model.Sizes != null && Model.Sizes.Any())
+            {
+                <div class="table-responsive">
+                    <table class="elx-table">
+                        <thead>
+                            <tr>
+                                <th>Size</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var s in Model.Sizes)
+                            {
+                                <tr>
+                                    <td>@s.Size</td>
+                                    <td>@s.Price EGP</td>
+                                    <td>@s.Stock</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p style="color:#8a6056;">No sizes available for this perfume.</p>
+            }
+
+            <div style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;">
+                <a class="btn-elx-outline" asp-controller="Product" asp-action="Index">
+                    Back to Products
+                </a>
+
+                <a class="btn-elx-outline" asp-controller="Cart" asp-action="Index">
+                    Go to Cart
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

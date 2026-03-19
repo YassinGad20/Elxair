@@ -1,0 +1,92 @@
+﻿@model Elxair.Models.Perfume
+
+@{
+    ViewData["Title"] = "Edit Perfume";
+}
+
+<section class="elx-section">
+    <div class="elx-eyebrow">Administration</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Edit Perfume</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="elx-card">
+                <div class="elx-card-body">
+                    <form asp-action="EditPerfume" method="post">
+                        <input asp-for="Id" type="hidden" />
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="elx-label"></label>
+                            <input asp-for="Name" class="elx-input" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Brand" class="elx-label"></label>
+                            <input asp-for="Brand" class="elx-input" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="elx-label"></label>
+                            <textarea asp-for="Description" class="elx-input" rows="4"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ImageUrl" class="elx-label"></label>
+                            <input asp-for="ImageUrl" class="elx-input" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Gender" class="elx-label"></label>
+                            <select asp-for="Gender" class="elx-input">
+                                <option value="">Select Gender</option>
+                                <option value="Him">For Him</option>
+                                <option value="Her">For Her</option>
+                                <option value="Unisex">Unisex</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="CategoryId" class="elx-label"></label>
+                            <input asp-for="CategoryId" class="elx-input" />
+                        </div>
+
+                        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                            <button type="submit" class="btn-elx-outline">Update</button>
+                            <a asp-action="Products" class="btn-elx-outline">Back</a>
+                        </div>
+                    </form>
+
+                    @if (Model.Sizes != null && Model.Sizes.Any())
+                    {
+                        <hr class="elx-divider my-4" />
+                        <h4 style="font-family:'Playfair Display',serif;color:#3a2018;">Sizes</h4>
+
+                        <table class="elx-table mt-3">
+                            <thead>
+                                <tr>
+                                    <th>Size</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var s in Model.Sizes)
+                                {
+                                    <tr>
+                                        <td>@s.Size</td>
+                                        <td>@s.Price EGP</td>
+                                        <td>@s.Stock</td>
+                                        <td>
+                                            <a class="btn-elx-outline" asp-action="EditPerfumeSize" asp-route-sizeId="@s.Id">Edit Size</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

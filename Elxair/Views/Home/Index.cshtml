@@ -1,8 +1,213 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Elxair.Models
+@{
+    ViewData["Title"] = "Home";
+
+    var bestsellers = ViewBag.Bestsellers as List<Perfume> ?? new List<Perfume>();
+    var forHim = ViewBag.ForHim as List<Perfume> ?? new List<Perfume>();
+    var forHer = ViewBag.ForHer as List<Perfume> ?? new List<Perfume>();
+    var unisex = ViewBag.Unisex as List<Perfume> ?? new List<Perfume>();
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<section style="display:grid;grid-template-columns:1fr 1fr;min-height:88vh;">
+    <div style="display:flex;flex-direction:column;justify-content:center;padding:80px 64px;position:relative;">
+        <div style="position:absolute;right:0;top:10%;bottom:10%;width:1px;background:linear-gradient(to bottom,transparent,var(--border),transparent);"></div>
+
+        <div class="elx-eyebrow" style="justify-content:flex-start;margin-bottom:20px;">
+            <span style="width:24px;height:1px;background:var(--gold);display:inline-block;"></span>
+            New Arrivals 2026
+        </div>
+
+        <h1 style="font-family:'Playfair Display',serif;font-size:5.2rem;line-height:1.04;font-weight:500;color:#2a1612;margin-bottom:24px;letter-spacing:0.2px;">
+            Wear Your<br />
+            <em style="font-style:italic;color:var(--rose-3);">Signature</em><br />
+            Scent
+        </h1>
+
+        <p style="color:#5c3d35;font-size:1rem;line-height:1.9;max-width:430px;font-weight:300;margin-bottom:36px;">
+            Rare ingredients, masterfully composed. From Oud Noir to Yara Candy —
+            each bottle is a chapter written on skin. Starting from just 3ml.
+        </p>
+
+        <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+            <a class="btn-elx-fill" asp-controller="Product" asp-action="Index" style="padding:13px 34px;font-size:0.78rem;">
+                Shop Collection
+            </a>
+
+            <a class="btn-elx-outline" asp-controller="Product" asp-action="Index" style="padding:13px 34px;font-size:0.78rem;">
+                View All Products
+            </a>
+        </div>
+    </div>
+
+    <div style="background:linear-gradient(145deg,#f5e8e2 0%,#ede0d8 50%,#e8d4cc 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+        <img src="~/images/perfumes/home-hero.jpg"
+             alt="Elxair Perfume"
+             style="width:70%;max-height:600px;object-fit:contain;filter:drop-shadow(0 40px 60px rgba(0,0,0,0.15));z-index:2;" />
+
+        <div style="position:absolute;top:40px;right:40px;background:white;border:1px solid var(--border);padding:16px 20px;text-align:center;border-radius:4px;">
+            <span style="font-family:'Playfair Display',serif;font-size:2rem;color:var(--rose-3);display:block;">47</span>
+            <span style="font-size:0.62rem;letter-spacing:2px;color:#8a6056;text-transform:uppercase;">Unique Scents</span>
+        </div>
+
+        <div style="position:absolute;bottom:36px;left:36px;background:var(--gold-3);border:1px solid var(--gold-2);padding:10px 16px;border-radius:2px;">
+            <span style="font-size:0.65rem;letter-spacing:2px;color:#3a2018;text-transform:uppercase;font-weight:500;">🎁 Samples from 3ml · 50 EGP</span>
+        </div>
+    </div>
+</section>
+
+<div style="display:grid;grid-template-columns:repeat(4,1fr);background:white;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    @foreach (var stat in new[] {
+        new { Num = "47", Label = "Fragrances" },
+        new { Num = "6",  Label = "Size Options" },
+        new { Num = "50", Label = "EGP From" },
+        new { Num = "100",Label = "ml Max Size" }
+    })
+    {
+        <div style="padding:28px 32px;text-align:center;border-right:1px solid var(--border);">
+            <span style="font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--rose-3);display:block;">@stat.Num</span>
+            <span style="font-size:0.65rem;letter-spacing:2.5px;color:#8a6056;text-transform:uppercase;margin-top:4px;display:block;font-weight:500;">@stat.Label</span>
+        </div>
+    }
 </div>
+
+<section class="elx-section elx-section-white">
+    <div class="elx-eyebrow">Top Picks</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Bestsellers</h2>
+
+    <div class="row g-4">
+        @if (bestsellers.Any())
+        {
+            foreach (var p in bestsellers)
+            {
+                <div class="col-lg-3 col-md-6">
+                    @await Html.PartialAsync("_ProductCard", p)
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center" style="padding:48px 0;">
+                <i class="bi bi-droplet" style="font-size:2.2rem;color:var(--rose-2);opacity:0.35;display:block;margin-bottom:12px;"></i>
+                <p style="color:#8a6056;font-size:0.88rem;">Add products in the Admin panel to see them here.</p>
+                <a class="btn-elx-outline" asp-controller="Product" asp-action="Index" style="margin-top:12px;font-size:0.75rem;padding:10px 28px;">Browse All</a>
+            </div>
+        }
+    </div>
+
+    <div style="text-align:center;margin-top:32px;">
+        <a class="btn-elx-outline" asp-controller="Product" asp-action="Index" style="font-size:0.72rem;padding:10px 28px;">
+            View All Products
+        </a>
+    </div>
+</section>
+
+<section class="elx-section" style="background:var(--white);">
+    <div class="elx-eyebrow">Feminine</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">For Her</h2>
+
+    <div class="row g-4">
+        @if (forHer.Any())
+        {
+            foreach (var p in forHer)
+            {
+                <div class="col-lg-3 col-md-6">
+                    @await Html.PartialAsync("_ProductCard", p)
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center" style="padding:48px 0;">
+                <i class="bi bi-droplet" style="font-size:2.2rem;color:var(--rose-2);opacity:0.35;display:block;margin-bottom:12px;"></i>
+                <p style="color:#8a6056;font-size:0.88rem;">No products available in this section yet.</p>
+            </div>
+        }
+    </div>
+
+    <div style="text-align:center;margin-top:32px;">
+        <a class="btn-elx-outline" asp-controller="Product" asp-action="Index" style="font-size:0.72rem;padding:10px 28px;">
+            See More
+        </a>
+    </div>
+</section>
+
+<section class="elx-section" style="background:var(--blush);">
+    <div class="elx-eyebrow">Masculine</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">For Him</h2>
+
+    <div class="row g-4">
+        @if (forHim.Any())
+        {
+            foreach (var p in forHim)
+            {
+                <div class="col-lg-3 col-md-6">
+                    @await Html.PartialAsync("_ProductCard", p)
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center" style="padding:48px 0;">
+                <i class="bi bi-droplet" style="font-size:2.2rem;color:var(--rose-2);opacity:0.35;display:block;margin-bottom:12px;"></i>
+                <p style="color:#8a6056;font-size:0.88rem;">No products available in this section yet.</p>
+            </div>
+        }
+    </div>
+
+    <div style="text-align:center;margin-top:32px;">
+        <a class="btn-elx-outline" asp-controller="Product" asp-action="Index" style="font-size:0.72rem;padding:10px 28px;">
+            See More
+        </a>
+    </div>
+</section>
+
+<section class="elx-section" style="background:var(--gold-3);">
+    <div class="elx-eyebrow">For Everyone</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Unisex</h2>
+
+    <div class="row g-4">
+        @if (unisex.Any())
+        {
+            foreach (var p in unisex)
+            {
+                <div class="col-lg-3 col-md-6">
+                    @await Html.PartialAsync("_ProductCard", p)
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center" style="padding:48px 0;">
+                <i class="bi bi-droplet" style="font-size:2.2rem;color:var(--gold);opacity:0.45;display:block;margin-bottom:12px;"></i>
+                <p style="color:#8a6056;font-size:0.88rem;">No products available in this section yet.</p>
+            </div>
+        }
+    </div>
+
+    <div style="text-align:center;margin-top:32px;">
+        <a class="btn-elx-outline" asp-controller="Product" asp-action="Index" style="font-size:0.72rem;padding:10px 28px;">
+            See More
+        </a>
+    </div>
+</section>
+
+<section class="elx-section elx-section-nude">
+    <div class="elx-eyebrow">Why Choose Us</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">The Elxair Promise</h2>
+
+    <div class="row g-4 text-center">
+        @foreach (var item in new[] {
+            new { Icon = "bi-droplet-half", Title = "Sample Sizes",   Desc = "Try before you commit — from just 3ml at 50 EGP." },
+            new { Icon = "bi-shield-check", Title = "Authentic Only", Desc = "Every fragrance is carefully sourced and verified." },
+            new { Icon = "bi-box-seam",     Title = "Gift Packaging", Desc = "Beautiful packaging ready for gifting on every order." },
+            new { Icon = "bi-truck",        Title = "Fast Delivery",  Desc = "Quick local shipping across Egypt." },
+        })
+        {
+            <div class="col-lg-3 col-md-6">
+                <i class="bi @item.Icon" style="font-size:1.8rem;color:var(--rose-2);display:block;margin-bottom:14px;"></i>
+                <h5 style="font-family:'Playfair Display',serif;font-size:1.05rem;color:#2c1712;margin-bottom:8px;font-weight:500;">@item.Title</h5>
+                <p style="font-size:0.85rem;color:#5c3d35;line-height:1.8;font-weight:300;">@item.Desc</p>
+            </div>
+        }
+    </div>
+</section>
