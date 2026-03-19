@@ -8,12 +8,19 @@ namespace Elxair.Controllers
         ProductService ps = new ProductService();
 
         // عرض كل البرفانات للمستخدم
-        public IActionResult Index()
+        public IActionResult Index(string? gender)
         {
             var perfumes = ps.GetAllPerfumes();
+
+            if (!string.IsNullOrEmpty(gender))
+            {
+                perfumes = perfumes
+                    .Where(p => p.Gender == gender)
+                    .ToList();
+            }
+
             return View(perfumes);
         }
-
         // تفاصيل البرفان + الأحجام
         public IActionResult Details(int id)
         {

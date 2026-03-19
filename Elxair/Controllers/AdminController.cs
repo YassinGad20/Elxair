@@ -1,5 +1,6 @@
 ﻿using Elxair.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Elxair.Controllers
 {
@@ -23,21 +24,35 @@ namespace Elxair.Controllers
         // صفحة إضافة برفان جديد
         public IActionResult CreatePerfume()
         {
+            ViewBag.Categories = new SelectList(adminService.GetAllCategories(), "Id", "Name");
             return View();
         }
 
         // حفظ البرفان الجديد
         [HttpPost]
+        [HttpPost]
         public IActionResult CreatePerfume(Perfume perfume)
         {
-            if (ModelState.IsValid)
+            if (string.IsNullOrWhiteSpace(perfume.Gender))
             {
-                adminService.AddPerfume(perfume);
-                return RedirectToAction("Products");
+                ModelState.AddModelError("Gender", "Please select gender.");
             }
-            return View(perfume);
-        }
 
+            if (perfume.CategoryId <= 0)
+            {
+                ModelState.AddModelError("CategoryId", "Please select category.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Categories = new SelectList(adminService.GetAllCategories(), "Id", "Name");
+                return View(perfume);
+            }
+
+            adminService.AddPerfume(perfume);
+            TempData["Success"] = "Perfume added successfully.";
+            return RedirectToAction("Products");
+        }
         // صفحة تعديل برفان
         public IActionResult EditPerfume(int id)
         {

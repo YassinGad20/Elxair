@@ -1,0 +1,43 @@
+﻿@model Elxair.Models.Perfume
+
+@{
+    var firstSize = Model.Sizes != null && Model.Sizes.Any() ? Model.Sizes.FirstOrDefault() : null;
+}
+
+<div class="elx-card">
+    <img src="@Model.ImageUrl" alt="@Model.Name" class="elx-card-img" />
+
+    <div class="elx-card-body">
+        <div class="elx-card-cat">
+            @(Model.Category != null ? Model.Category.Name : "Perfume")
+        </div>
+
+        <h4 class="elx-card-name">@Model.Name</h4>
+
+        @if (Model.Sizes != null && Model.Sizes.Any())
+        {
+            <div class="elx-sizes">
+                @foreach (var s in Model.Sizes.Take(4))
+                {
+                    <span class="elx-size">@s.Size</span>
+                }
+            </div>
+        }
+
+        <div class="elx-card-price">
+            <span>@Model.Brand</span>
+            <strong>
+                @(firstSize != null ? $"{firstSize.Price} EGP" : "Price N/A")
+            </strong>
+        </div>
+
+        <div style="margin-top:16px;">
+            <a class="btn-elx-outline"
+                   asp-controller="Product"
+                   asp-action="Details"
+                   asp-route-id="@Model.Id">
+                View Details
+            </a>
+        </div>
+    </div>
+</div>

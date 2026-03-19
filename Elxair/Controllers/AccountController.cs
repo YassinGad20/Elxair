@@ -7,26 +7,40 @@ namespace Elxair.Controllers
     {
         UserService us = new UserService();
 
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
         public IActionResult Register(User user)
         {
+            user.Role = "User";
+            ModelState.Remove("Role");
+
             if (!ModelState.IsValid)
                 return View(user);
 
-            // التأكد إن الإيميل مش موجود
             if (us.EmailExists(user.Email))
             {
                 ViewBag.Error = "Email already exists";
                 return View(user);
             }
 
-            // تحديد نوع المستخدم
-            user.Role = "User";
-
-            // تسجيل المستخدم
             us.Register(user);
 
+            TempData["Success"] = "Account created successfully. Please login.";
             return RedirectToAction("Login");
         }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
         public IActionResult Login(string email, string password)
         {
             var user = us.Login(email, password);
@@ -40,8 +54,8 @@ namespace Elxair.Controllers
             if (user.Role == "Admin")
                 return RedirectToAction("Dashboard", "Admin");
 
+            TempData["Success"] = "Welcome back!";
             return RedirectToAction("Index", "Product");
         }
-
     }
 }

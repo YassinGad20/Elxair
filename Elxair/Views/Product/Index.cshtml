@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Elxair.Models.Perfume>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+<section class="elx-section">
+    <div class="elx-eyebrow">Our Collection</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">All Perfumes</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="text-center" style="padding:60px 0;">
+            <p style="color:#8a6056;">No perfumes available right now.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var p in Model)
+            {
+                <div class="col-lg-3 col-md-6">
+                    @await Html.PartialAsync("_ProductCard", p)
+                </div>
+            }
+        </div>
+    }
+</section>

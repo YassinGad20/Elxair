@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<section class="elx-section">
+    <div class="elx-eyebrow">Administration</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Admin Dashboard</h2>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="elx-card">
+                <div class="elx-card-body">
+                    <div class="elx-card-cat">Products</div>
+                    <h4 class="elx-card-name">Manage Perfumes</h4>
+                    <p style="color:#6b4a42;">Add, edit, delete perfumes and manage sizes.</p>
+                    <a class="btn-elx-outline" asp-controller="Admin" asp-action="Products">Go to Products</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="elx-card">
+                <div class="elx-card-body">
+                    <div class="elx-card-cat">Orders</div>
+                    <h4 class="elx-card-name">Manage Orders</h4>
+                    <p style="color:#6b4a42;">Track customer orders and update status.</p>
+                    <a class="btn-elx-outline" asp-controller="Admin" asp-action="Orders">View Orders</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

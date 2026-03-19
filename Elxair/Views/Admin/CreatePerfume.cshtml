@@ -1,0 +1,63 @@
+﻿@model Elxair.Models.Perfume
+
+@{
+    ViewData["Title"] = "Create Perfume";
+}
+
+<section class="elx-section">
+    <div class="elx-eyebrow">Administration</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Add New Perfume</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="elx-card">
+                <div class="elx-card-body">
+                    <form asp-action="CreatePerfume" method="post">
+                        <div class="mb-3">
+                            <label asp-for="Name" class="elx-label"></label>
+                            <input asp-for="Name" class="elx-input" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Brand" class="elx-label"></label>
+                            <input asp-for="Brand" class="elx-input" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="elx-label"></label>
+                            <textarea asp-for="Description" class="elx-input" rows="4"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ImageUrl" class="elx-label"></label>
+                            <input asp-for="ImageUrl" class="elx-input" placeholder="/images/perfumes/stronger-with-you.jpg" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Gender" class="elx-label"></label>
+                            <select asp-for="Gender" class="elx-input">
+                                <option value="">Select Gender</option>
+                                <option value="Him">For Him</option>
+                                <option value="Her">For Her</option>
+                                <option value="Unisex">Unisex</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="CategoryId" class="elx-label"></label>
+                            <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="elx-input">
+                                <option value="">Select Category</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        </div>
+
+                        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                            <button type="submit" class="btn-elx-outline">Save</button>
+                            <a asp-action="Products" class="btn-elx-outline">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

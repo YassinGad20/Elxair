@@ -9,7 +9,7 @@ namespace Elxair.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=.;Database=Elxair;Trusted_Connection=True;TrustServerCertificate=True");
+                optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=Elxair;Trusted_Connection=True;TrustServerCertificate=True");
             }
         }
         public DbSet<User> Users { get; set; }

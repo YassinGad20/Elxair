@@ -1,0 +1,66 @@
+﻿@model Elxair.Models.User
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<section class="elx-section">
+    <div class="elx-eyebrow">Account</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Create Your Account</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="elx-card">
+                <div class="elx-card-body p-4 p-md-5">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="elx-alert elx-alert-danger mb-4">
+                            <i class="bi bi-exclamation-circle me-2"></i>@ViewBag.Error
+                        </div>
+                    }
+
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                    <form asp-action="Register" method="post">
+                        <div class="mb-3">
+                            <label asp-for="Name" class="elx-label"></label>
+                            <input asp-for="Name" class="elx-input" placeholder="Enter your name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="elx-label"></label>
+                            <input asp-for="Email" class="elx-input" placeholder="Enter your email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Password" class="elx-label"></label>
+                            <input asp-for="Password" type="password" class="elx-input" placeholder="Create a password" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn-elx-outline justify-content-center">
+                                Register
+                            </button>
+                        </div>
+
+                        <div class="text-center" style="font-size:0.9rem; color:#6b4a42;">
+                            Already have an account?
+                            <a asp-controller="Account" asp-action="Login" style="color:#8f5751; text-decoration:none; font-weight:500;">
+                                Login here
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

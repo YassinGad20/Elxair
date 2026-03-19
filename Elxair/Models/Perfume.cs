@@ -14,8 +14,9 @@
 
         public int CategoryId { get; set; }
 
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
 
-        public List<PerfumeSize> Sizes { get; set; }
+        public List<PerfumeSize> Sizes { get; set; } = new();
+        public string Gender { get; set; }
     }
 }
