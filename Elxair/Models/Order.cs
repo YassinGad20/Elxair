@@ -16,5 +16,8 @@
 
         public List<OrderItem> Items { get; set; }
 
+        public Payment? Payment { get; set; }
+
+
     }
 }

@@ -1,0 +1,109 @@
+﻿@model Elxair.Models.Cart
+@{
+    ViewData["Title"] = "Your Shopping Bag";
+    // حساب المجموع الكلي من لستة الـ Items
+    var grandTotal = Model.Items?.Sum(i => i.Quantity * i.PerfumeSize.Price) ?? 0;
+}
+
+<section class="elx-section">
+    <div class="elx-eyebrow">Checkout</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Your Selection</h2>
+
+    <div class="container mt-5">
+        @if (Model.Items == null || !Model.Items.Any())
+        {
+            <div class="text-center py-5" style="border: 1px dashed #d1b8b0; border-radius: 8px;">
+                <i class="bi bi-bag" style="font-size: 2.5rem; color: #d1b8b0;"></i>
+                <p class="mt-3" style="color: #6b4a42; font-family: 'Playfair Display', serif;">Your shopping bag is empty.</p>
+                <a asp-controller="Home" asp-action="Index" class="btn-elx-outline mt-2">Browse Perfumes</a>
+            </div>
+        }
+        else
+        {
+            <div class="row g-5">
+                <div class="col-lg-8">
+                    <div class="table-responsive">
+                        <table class="table elx-table align-middle">
+                            <thead style="border-bottom: 2px solid #2c1712;">
+                                <tr style="text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; color: #8f5751;">
+                                    <th>Fragrance</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th class="text-end">Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr style="border-bottom: 1px solid #f0e6e3;">
+                                        <td class="py-4">
+                                            <div class="d-flex align-items-center">"
+                                                     style="width: 70px; height: 70px; object-fit: cover; border-radius: 4px; border: 1px solid #eee;">
+                                                <div class="ms-3">
+                                                    <h6 class="mb-0" style="color: #2c1712; font-weight: 600;">@item.PerfumeSize.Perfume</h6>
+                                                    <small class="text-muted">@item.PerfumeSize.Perfume?.Name</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>EGP @item.PerfumeSize.Price</td>
+                                        <td>
+                                            <span class="px-3 py-1" style="background: #fcfaf9; border: 1px solid #eee;">
+                                                @item.Quantity
+                                            </span>
+                                        </td>
+                                        <td class="text-end" style="font-weight: 600; color: #2c1712;">
+                                            EGP @(item.Quantity * item.PerfumeSize.Price)
+                                        </td>
+                                        <td class="text-end">
+                                            <a asp-action="RemoveFromCart" asp-route-id="@item.Id" class="text-muted" style="font-size: 1.2rem;">
+                                                <i class="bi bi-x"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <a asp-controller="Home" asp-action="Index" class="text-decoration-none" style="color: #8f5751; font-size: 0.9rem;">
+                        <i class="bi bi-arrow-left me-2"></i> Continue Shopping
+                    </a>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="elx-card p-4 shadow-sm" style="background-color: #fcfaf9; border: none;">
+                        <h5 class="mb-4" style="color: #2c1712; font-family: 'Playfair Display', serif;">Order Summary</h5>
+
+                        <div class="d-flex justify-content-between mb-3">
+                            <span style="color: #6b4a42;">Bag Subtotal</span>
+                            <span>EGP @grandTotal</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span style="color: #6b4a42;">Estimated Shipping</span>
+                            <span class="text-muted" style="font-size: 0.85rem;">Calculated next</span>
+                        </div>
+                        <hr style="border-top: 1px solid #d1b8b0;">
+                        <div class="d-flex justify-content-between mb-4">
+                            <strong style="color: #2c1712; font-size: 1.1rem;">Total</strong>
+                            <strong style="color: #8f5751; font-size: 1.2rem;">EGP @grandTotal</strong>
+                        </div>
+
+                        <form asp-controller="Order" asp-action="CreateOrder" method="post">
+                            <input type="hidden" name="userId" value="@Model.UserId" />
+                            <button type="submit" class="btn btn-dark w-100 py-3"
+                                    style="background-color: #2c1712; border: none; border-radius: 0; letter-spacing: 1px; font-weight: 500;">
+                                PROCEED TO CHECKOUT
+                            </button>
+                        </form>
+
+                        <div class="mt-3 text-center">
+                            <small class="text-muted" style="font-size: 0.75rem;">
+                                <i class="bi bi-shield-check me-1"></i> Secure payment processed for Elxair
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

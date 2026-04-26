@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Elxair.Models.Order>
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<section class="elx-section">
+    <div class="elx-eyebrow">History</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Your Purchase Orders</h2>
+
+    <div class="container mt-5">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-bag-x" style="font-size: 3rem; color: #d1b8b0;"></i>
+                <p class="mt-3" style="color: #6b4a42;">You haven't placed any orders yet.</p>
+                <a asp-controller="Order" asp-action="Order" class="btn-elx-outline mt-2">Start Shopping</a>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var order in Model)
+                {
+                    <div class="col-12">
+                        <div class="elx-card" style="border-left: 4px solid #8f5751;">
+                            <div class="elx-card-body p-4">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3">
+                                        <div style="font-size: 0.8rem; text-transform: uppercase; color: #8f5751; font-weight: 600;">Order ID</div>
+                                        <div style="color: #2c1712; font-weight: 500;">#@order.Id</div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div style="font-size: 0.8rem; text-transform: uppercase; color: #8f5751; font-weight: 600;">Date Placed</div>
+                                        <div style="color: #2c1712;">@order.OrderDate.ToString("MMM dd, yyyy")</div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div style="font-size: 0.8rem; text-transform: uppercase; color: #8f5751; font-weight: 600;">Total Amount</div>
+                                        <div style="color: #2c1712; font-weight: 700;">EGP @order.TotalPrice</div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        @{
+                                            var statusColor = order.Status == "Delivered" ? "#4a7c59" : "#c27ba0"; // ألوان هادية مستوحاة من coolwarm
+                                        }
+                                        <span class="badge" style="background-color: @statusColor; font-weight: 400; padding: 8px 15px; border-radius: 20px;">
+                                            @order.Status
+                                        </span>
+                                    </div>
+
+                                    <div class="col-md-2 text-md-end">
+                                        <a asp-action="Details" asp-route-id="@order.Id" class="btn-elx-outline" style="font-size: 0.85rem; padding: 8px 20px;">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>

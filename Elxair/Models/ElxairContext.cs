@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Elxair.Models
 {
@@ -9,7 +10,7 @@ namespace Elxair.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=Elxair;Trusted_Connection=True;TrustServerCertificate=True");
+                optionsBuilder.UseSqlServer("Server=.;Database=Elxair;Trusted_Connection=True;TrustServerCertificate=True");
             }
         }
         public DbSet<User> Users { get; set; }
@@ -27,5 +28,34 @@ namespace Elxair.Models
         public DbSet<Order> Orders { get; set; }
 
         public DbSet<OrderItem> OrderItems { get; set; }
+
+        public DbSet<Payment> Payments { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // One-to-One: Order <-> Payment
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Order)
+                .WithOne(o => o.Payment)
+                .HasForeignKey<Payment>(p => p.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Payment -> User (NoAction لكسر الـ cycle)
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.User)
+                .WithMany(u => u.Payments)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Order -> User
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.User)
+                .WithMany(u => u.Orders)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+
+
     }
 }

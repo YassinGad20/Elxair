@@ -7,6 +7,9 @@ namespace Elxair.Models
         ElxairContext db = new ElxairContext();
         public void Register(User user)
         {
+            user.Role = "User";
+            // أول ما يسجل، بنكريت له كارت فاضية مربوطة بيه
+            user.Cart = new Cart();
             db.Users.Add(user);
             db.SaveChanges();
         }

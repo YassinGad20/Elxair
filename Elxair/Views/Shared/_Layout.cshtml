@@ -614,24 +614,38 @@
 <body>
     <header>
         <nav class="elx-nav">
-            <a class="elx-brand" asp-controller="Home" asp-action="Index">Elxair</a>
+            <a class="elx-brand" asp-controller="Home" asp-action="Index">Elixir</a>
 
             <button class="elx-toggler" onclick="elxToggleNav()" aria-label="Menu">
                 <i class="bi bi-list"></i>
             </button>
 
+            @{
+                var sessionRole = Context.Session.GetString("UserRole");
+                var sessionName = Context.Session.GetString("UserName");
+                var isLoggedIn = Context.Session.GetInt32("UserId") != null;
+            }
+
             <ul class="elx-nav-links" id="elxLinks">
                 <li><a asp-controller="Home" asp-action="Index">Home</a></li>
                 <li><a asp-controller="Product" asp-action="Index">Products</a></li>
-                <li><a asp-controller="Cart" asp-action="Index"><i class="bi bi-bag me-1"></i>Cart</a></li>
-                <li><a asp-controller="Order" asp-action="Index">Orders</a></li>
-                <li><a asp-controller="Admin" asp-action="Dashboard">Admin</a></li>
-            </ul>
 
-            <div class="elx-nav-actions" id="elxActions">
-                <a class="btn-elx-outline" asp-controller="Account" asp-action="Login">Login</a>
-                <a class="btn-elx-fill" asp-controller="Account" asp-action="Register">Register</a>
-            </div>
+                @if (isLoggedIn)
+                {
+                    <li><a asp-controller="Cart" asp-action="Index"><i class="bi bi-bag me-1"></i>Cart</a></li>
+                    <li><a asp-controller="Order" asp-action="Index">My Orders</a></li>
+                    @if (sessionRole == "Admin")
+                    {
+                        <li><a asp-controller="Admin" asp-action="Dashboard">Admin</a></li>
+                    }
+                    <li><a asp-controller="Account" asp-action="Logout">Logout (@sessionName)</a></li>
+                }
+                else
+                {
+                    <li><a asp-controller="Account" asp-action="Login">Login</a></li>
+                    <li><a asp-controller="Account" asp-action="Register">Register</a></li>
+                }
+            </ul>
         </nav>
     </header>
 

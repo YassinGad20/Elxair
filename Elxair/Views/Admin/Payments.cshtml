@@ -1,0 +1,66 @@
+﻿@model IEnumerable<Elxair.Models.Payment>
+@{
+    ViewData["Title"] = "Payments";
+}
+
+<section class="elx-section">
+    <div class="elx-eyebrow">Administration</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Payment Records</h2>
+
+    <div class="table-responsive">
+        <table class="elx-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Governorate</th>
+                    <th>Address</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td>#@p.Id</td>
+                        <td>#@p.OrderId</td>
+                        <td>@p.FullName</td>
+                        <td>@p.Phone</td>
+                        <td>@p.Governorate</td>
+                        <td style="font-size:0.82rem;color:var(--brown-2);">@p.Address</td>
+                        <td><strong>EGP @p.Amount</strong></td>
+                        <td>
+                            @{
+                                var color = p.Status == "Paid" ? "#4a7c59" : "#c27b00";
+                            }
+                            <span style="color:@color;font-weight:500;">@p.Status</span>
+                        </td>
+                        <td>@p.PaymentDate.ToString("MMM dd, yyyy")</td>
+                        <td>
+                            @if (p.Status == "Pending")
+                            {
+                                <a class="btn-elx-outline"
+                                   asp-action="ConfirmPayment"
+                                   asp-route-paymentId="@p.Id">
+                                    Confirm Paid
+                                </a>
+                            }
+                            else
+                            {
+                                <span style="color:#4a7c59;font-size:0.8rem;">
+                                    <i class="bi bi-check-circle me-1"></i>Done
+                                </span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+

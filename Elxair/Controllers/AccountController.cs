@@ -8,10 +8,7 @@ namespace Elxair.Controllers
         UserService us = new UserService();
 
         [HttpGet]
-        public IActionResult Register()
-        {
-            return View();
-        }
+        public IActionResult Register() => View();
 
         [HttpPost]
         public IActionResult Register(User user)
@@ -19,8 +16,7 @@ namespace Elxair.Controllers
             user.Role = "User";
             ModelState.Remove("Role");
 
-            if (!ModelState.IsValid)
-                return View(user);
+            if (!ModelState.IsValid) return View(user);
 
             if (us.EmailExists(user.Email))
             {
@@ -29,16 +25,12 @@ namespace Elxair.Controllers
             }
 
             us.Register(user);
-
             TempData["Success"] = "Account created successfully. Please login.";
             return RedirectToAction("Login");
         }
 
         [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
+        public IActionResult Login() => View();
 
         [HttpPost]
         public IActionResult Login(string email, string password)
@@ -51,11 +43,21 @@ namespace Elxair.Controllers
                 return View();
             }
 
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("UserName", user.Name);
+            HttpContext.Session.SetString("UserRole", user.Role);
+
             if (user.Role == "Admin")
                 return RedirectToAction("Dashboard", "Admin");
 
-            TempData["Success"] = "Welcome back!";
-            return RedirectToAction("Index", "Product");
+            TempData["Success"] = $"Welcome back, {user.Name}!";
+            return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
         }
     }
 }

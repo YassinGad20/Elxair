@@ -69,9 +69,27 @@
                     Back to Products
                 </a>
 
-                <a class="btn-elx-outline" asp-controller="Cart" asp-action="Index">
-                    Go to Cart
-                </a>
+                <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                    @if (Model.Sizes != null && Model.Sizes.Any())
+                    {
+                        <div class="mb-3">
+                            <label class="elx-label">Select Size</label>
+                            <select name="perfumeSizeId" class="elx-input" style="max-width:220px;">
+                                @foreach (var s in Model.Sizes)
+                                {
+                                    <option value="@s.Id">@s.Size — @s.Price EGP (@s.Stock in stock)</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                    <input type="hidden" name="quantity" value="1" />
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a asp-controller="Product" asp-action="Index" class="btn-elx-outline">Back to Products</a>
+                        <button type="submit" class="btn-elx-outline" style="background:#2c1712;color:white;">
+                            Add to Cart
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

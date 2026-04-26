@@ -1,32 +1,39 @@
-namespace Elxair
+using Elxair.Models;
+using Microsoft.EntityFrameworkCore;
+
+
+var builder = WebApplication.CreateBuilder(args);
+
+// 1. ≈÷«›… Œœ„«  «·‹ Session Ê«·‹ HttpContext
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSession(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // „œ… «·Ã·”…
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
 
-            var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
-            app.UseStaticFiles();
+//  ”ÃÌ· «·”Ì—›Ì”“ ⁄‘«‰ ‰ﬁœ— ‰” Œœ„Â„
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<OrderService>();
 
-            app.UseRouting();
 
-            app.UseAuthorization();
+builder.Services.AddControllersWithViews();
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+var app = builder.Build();
 
-            app.Run();
-        }
-    }
-}
+app.UseSession(); // „Â„ Ãœ« ﬁ»· «·‹ Routing
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Account}/{action=Login}/{id?}");
+
+app.Run();
