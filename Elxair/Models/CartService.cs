@@ -4,7 +4,12 @@ namespace Elxair.Models
 {
     public class CartService
     {
-        ElxairContext db = new ElxairContext();
+        private readonly ElxairContext db;
+
+        public CartService(ElxairContext db)
+        {
+            this.db = db;
+        }
 
         public void AddToCart(int userId, int perfumeSizeId, int quantity)
         {
@@ -38,7 +43,7 @@ namespace Elxair.Models
                 });
             }
 
-            perfumeSize.Stock -= quantity;
+            //perfumeSize.Stock -= quantity;
             db.SaveChanges();
         }
 

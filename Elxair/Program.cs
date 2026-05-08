@@ -1,39 +1,49 @@
 using Elxair.Models;
 using Microsoft.EntityFrameworkCore;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. ≈÷«›… Œœ„«  «·‹ Session Ê«·‹ HttpContext
+// 1. HttpContext
 builder.Services.AddHttpContextAccessor();
+
+// 2. Session
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // „œ… «·Ã·”…
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
 
+// 3. Database
+builder.Services.AddDbContext<ElxairContext>(options =>
+    options.UseSqlServer("Server=.\\SQLEXPRESS;Database=Elxair;Trusted_Connection=True;TrustServerCertificate=True;"));
 
-
-//  ”ÃÌ· «·”Ì—›Ì”“ ⁄‘«‰ ‰ﬁœ— ‰” Œœ„Â„
+// 4. Services (DI)
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<OrderService>();
 
+builder.Services.AddScoped<PaymentService>();
 
+// 5. MVC
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-app.UseSession(); // „Â„ Ãœ« ﬁ»· «·‹ Routing
+// 6. Middleware
 app.UseStaticFiles();
+
 app.UseRouting();
+
+app.UseSession(); // ŸÑÿßÿ≤ŸÖ ÿ®ÿπÿØ UseRouting ŸàŸÇÿ®ŸÑ Authorization
+
 app.UseAuthorization();
 
+// 7. Routing
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

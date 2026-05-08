@@ -4,8 +4,36 @@ namespace Elxair.Models
 {
     public class ProductService
     {
-        ElxairContext db = new ElxairContext();
+        private readonly ElxairContext db;
 
+        public ProductService(ElxairContext db)
+        {
+            this.db = db;
+        }
+        public List<Perfume> SearchAndFilter(string? search, string? gender, int? categoryId)
+        {
+            var query = db.Perfumes.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(p =>
+                    p.Name.Contains(search) ||
+                    p.Brand.Contains(search) ||
+                    p.Description.Contains(search));
+            }
+
+            if (!string.IsNullOrWhiteSpace(gender))
+            {
+                query = query.Where(p => p.Gender == gender);
+            }
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(p => p.CategoryId == categoryId.Value);
+            }
+
+            return query.ToList();
+        }
         public List<Perfume> GetAllPerfumes()
         {
             return db.Perfumes
@@ -58,6 +86,16 @@ namespace Elxair.Models
                 db.Perfumes.Remove(perfume);
                 db.SaveChanges();
             }
+        }
+        public List<Perfume> GetRecommendations(Perfume current)
+        {
+            return db.Perfumes
+                .Where(p =>
+                    p.Id != current.Id &&
+                    p.Gender == current.Gender &&
+                    p.CategoryId == current.CategoryId)
+                .Take(4)
+                .ToList();
         }
     }
 }

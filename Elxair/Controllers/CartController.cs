@@ -3,7 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 
 public class CartController : Controller
 {
-    CartService cs = new CartService();
+    private readonly CartService cs;
+
+    public CartController(CartService cs)
+    {
+        this.cs = cs;
+    }
 
     public IActionResult Index()
     {
@@ -33,7 +38,7 @@ public class CartController : Controller
 
         return RedirectToAction("Index");
     }
-
+    [HttpPost]
     public IActionResult RemoveFromCart(int itemId)
     {
         int? userId = HttpContext.Session.GetInt32("UserId");

@@ -4,7 +4,13 @@ namespace Elxair.Models
 {
     public class AdminService
     {
-        ElxairContext db = new ElxairContext();
+        private readonly ElxairContext db;
+
+        public AdminService(ElxairContext db)
+        {
+            this.db = db;
+        }
+
 
         public List<Perfume> GetAllPerfumes()
         {

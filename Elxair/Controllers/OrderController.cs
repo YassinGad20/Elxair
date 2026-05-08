@@ -5,8 +5,18 @@ namespace Elxair.Controllers
 {
     public class OrderController : Controller
     {
-        OrderService os = new OrderService();
-        PaymentService ps = new PaymentService();
+        private readonly OrderService os;
+
+        public OrderController(OrderService os)
+        {
+            this.os = os;
+        }
+        private readonly PaymentService paymentService;
+
+        public OrderController(PaymentService paymentService)
+        {
+            this.paymentService = paymentService;
+        }
 
         // عرض صفحة اختيار طريقة الدفع قبل تأكيد الأوردر
         public IActionResult Checkout()
@@ -47,7 +57,7 @@ namespace Elxair.Controllers
 
             decimal amount = order?.TotalPrice ?? 0;
 
-            ps.CreatePayment(orderId, userId.Value, customerName,
+            paymentService.CreatePayment(orderId, userId.Value, customerName,
                              amount, fullName, phone, governorate, address);
 
             TempData["Success"] = "Order placed successfully!";

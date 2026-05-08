@@ -1,12 +1,4 @@
-﻿
-
-
-
-
-
-
-
-@using Elxair.Models
+﻿@using Elxair.Models
 @{
     ViewData["Title"] = "Home";
 
@@ -37,12 +29,11 @@
         </p>
 
         <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
-            <a class="btn-elx-fill" asp-controller="Product" asp-action="Index" style="padding:13px 34px;font-size:0.78rem;">
+            <a class="btn-elx-fill"
+                   asp-controller="Product"
+                   asp-action="Index"
+                   style="padding:13px 34px;font-size:0.78rem;">
                 Shop Collection
-            </a>
-
-            <a class="btn-elx-outline" asp-controller="Product" asp-action="Index" style="padding:13px 34px;font-size:0.78rem;">
-                View All Products
             </a>
         </div>
     </div>
@@ -133,7 +124,11 @@
     </div>
 
     <div style="text-align:center;margin-top:32px;">
-        <a class="btn-elx-outline" asp-controller="Product" asp-action="Index" style="font-size:0.72rem;padding:10px 28px;">
+        <a class="btn-elx-outline"
+               asp-controller="Product"
+               asp-action="Index"
+               asp-route-gender="Her"
+               style="font-size:0.72rem;padding:10px 28px;">
             See More
         </a>
     </div>
@@ -163,7 +158,11 @@
     </div>
 
     <div style="text-align:center;margin-top:32px;">
-        <a class="btn-elx-outline" asp-controller="Product" asp-action="Index" style="font-size:0.72rem;padding:10px 28px;">
+        <a class="btn-elx-outline"
+               asp-controller="Product"
+               asp-action="Index"
+               asp-route-gender="Him"
+               style="font-size:0.72rem;padding:10px 28px;">
             See More
         </a>
     </div>
@@ -193,7 +192,11 @@
     </div>
 
     <div style="text-align:center;margin-top:32px;">
-        <a class="btn-elx-outline" asp-controller="Product" asp-action="Index" style="font-size:0.72rem;padding:10px 28px;">
+        <a class="btn-elx-outline"
+               asp-controller="Product"
+               asp-action="Index"
+               asp-route-gender="Unisex"
+               style="font-size:0.72rem;padding:10px 28px;">
             See More
         </a>
     </div>

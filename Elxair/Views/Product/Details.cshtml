@@ -6,13 +6,18 @@
 
 <section class="elx-section">
     <div class="row g-5 align-items-start">
+
         <div class="col-lg-5">
             <div class="elx-card" style="overflow:hidden;">
-                <img src="@Model.ImageUrl" alt="@Model.Name" class="elx-card-img" style="height:520px;" />
+                <img src="@Model.ImageUrl"
+                     alt="@Model.Name"
+                     class="elx-card-img"
+                     style="height:520px;" />
             </div>
         </div>
 
         <div class="col-lg-7">
+
             <div class="elx-badge mb-3">
                 @(Model.Category != null ? Model.Category.Name : "Perfume")
             </div>
@@ -46,6 +51,7 @@
                                 <th>Stock</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             @foreach (var s in Model.Sizes)
                             {
@@ -61,36 +67,84 @@
             }
             else
             {
-                <p style="color:#8a6056;">No sizes available for this perfume.</p>
+                <p style="color:#8a6056;">
+                    No sizes available for this perfume.
+                </p>
             }
 
             <div style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;">
-                <a class="btn-elx-outline" asp-controller="Product" asp-action="Index">
-                    Back to Products
-                </a>
 
-                <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                <form asp-controller="Cart"
+                      asp-action="AddToCart"
+                      method="post">
+
                     @if (Model.Sizes != null && Model.Sizes.Any())
                     {
                         <div class="mb-3">
+                            <a href="C:\Users\c.delivery for lap\Downloads\one of my faves  Bombshell VS _3.jfif">C:\Users\c.delivery for lap\Downloads\one of my faves  Bombshell VS _3.jfif</a>
                             <label class="elx-label">Select Size</label>
-                            <select name="perfumeSizeId" class="elx-input" style="max-width:220px;">
+
+                            <select name="perfumeSizeId"
+                                    class="elx-input"
+                                    style="max-width:220px;">
+
                                 @foreach (var s in Model.Sizes)
                                 {
-                                    <option value="@s.Id">@s.Size — @s.Price EGP (@s.Stock in stock)</option>
+                                    <option value="@s.Id">
+                                        @s.Size — @s.Price EGP (@s.Stock in stock)
+                                    </option>
                                 }
                             </select>
                         </div>
                     }
+
                     <input type="hidden" name="quantity" value="1" />
+
                     <div class="d-flex gap-2 flex-wrap">
-                        <a asp-controller="Product" asp-action="Index" class="btn-elx-outline">Back to Products</a>
-                        <button type="submit" class="btn-elx-outline" style="background:#2c1712;color:white;">
+
+                        <a asp-controller="Product"
+                               asp-action="Index"
+                               class="btn-elx-outline">
+                            Back to Products
+                        </a>
+
+                        <button type="submit"
+                                class="btn-elx-outline"
+                                style="background:#2c1712;color:white;">
                             Add to Cart
                         </button>
+
                     </div>
                 </form>
+
             </div>
+
         </div>
     </div>
 </section>
+@{
+    var recommendations = ViewBag.Recommendations as List<Elxair.Models.Perfume> ?? new List<Elxair.Models.Perfume>();
+}
+
+@if (recommendations.Any())
+{
+    <section class="elx-section" style="padding-top:20px;">
+
+        <div class="elx-eyebrow">
+            Recommended For You
+        </div>
+
+        <h2 class="elx-section-title" style="color:#2c1712;">
+            You May Also Like
+        </h2>
+
+        <div class="row g-4">
+            @foreach (var item in recommendations)
+            {
+                <div class="col-lg-3 col-md-6">
+                    @await Html.PartialAsync("_ProductCard", item)
+                </div>
+            }
+        </div>
+    </section>
+}
