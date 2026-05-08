@@ -4,8 +4,12 @@ namespace Elxair.Models
 {
     public class PaymentService
     {
-        ElxairContext db = new ElxairContext();
+        private readonly ElxairContext db;
 
+        public PaymentService(ElxairContext db)
+        {
+            this.db = db;
+        }
         public void CreatePayment(int orderId, int userId, string customerName,
                                   decimal amount, string fullName,
                                   string phone, string governorate, string address)

@@ -6,8 +6,14 @@ namespace Elxair.Controllers
 {
     public class AdminController : Controller
     {
-        AdminService adminService = new AdminService();
-        PaymentService paymentService = new PaymentService();
+        private readonly AdminService adminService;
+        private readonly PaymentService paymentService;
+
+        public AdminController(AdminService adminService, PaymentService paymentService)
+        {
+            this.adminService = adminService;
+            this.paymentService = paymentService;
+        }
 
         private bool IsAdmin() =>
             HttpContext.Session.GetString("UserRole") == "Admin";
@@ -27,6 +33,7 @@ namespace Elxair.Controllers
         public IActionResult CreatePerfume()
         {
             if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
             ViewBag.Categories = new SelectList(adminService.GetAllCategories(), "Id", "Name");
             return View();
         }
@@ -58,7 +65,9 @@ namespace Elxair.Controllers
             if (!IsAdmin()) return RedirectToAction("Login", "Account");
 
             var perfume = adminService.GetAllPerfumes().FirstOrDefault(p => p.Id == id);
-            if (perfume == null) return NotFound();
+
+            if (perfume == null)
+                return NotFound();
 
             ViewBag.Categories = new SelectList(adminService.GetAllCategories(), "Id", "Name");
             return View(perfume);
@@ -83,6 +92,7 @@ namespace Elxair.Controllers
         public IActionResult DeletePerfume(int id)
         {
             if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
             adminService.DeletePerfume(id);
             TempData["Success"] = "Perfume deleted.";
             return RedirectToAction("Products");
@@ -91,6 +101,7 @@ namespace Elxair.Controllers
         public IActionResult AddPerfumeSize(int perfumeId)
         {
             if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
             ViewBag.PerfumeId = perfumeId;
             return View();
         }
@@ -99,6 +110,7 @@ namespace Elxair.Controllers
         public IActionResult AddPerfumeSize(int perfumeId, string size, decimal price, int stock)
         {
             if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
             adminService.AddPerfumeSize(perfumeId, size, price, stock);
             TempData["Success"] = "Size added successfully.";
             return RedirectToAction("EditPerfume", new { id = perfumeId });
@@ -112,7 +124,9 @@ namespace Elxair.Controllers
                 .SelectMany(p => p.Sizes)
                 .FirstOrDefault(s => s.Id == sizeId);
 
-            if (perfumeSize == null) return NotFound();
+            if (perfumeSize == null)
+                return NotFound();
+
             return View(perfumeSize);
         }
 
@@ -120,6 +134,7 @@ namespace Elxair.Controllers
         public IActionResult EditPerfumeSize(PerfumeSize size)
         {
             if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
             adminService.UpdatePerfumeSize(size);
             TempData["Success"] = "Size updated.";
             return RedirectToAction("EditPerfume", new { id = size.PerfumeId });
@@ -128,18 +143,21 @@ namespace Elxair.Controllers
         public IActionResult Orders()
         {
             if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
             return View(adminService.GetAllOrders());
         }
 
         public IActionResult Payments()
         {
             if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
             return View(paymentService.GetAllPayments());
         }
 
         public IActionResult ConfirmPayment(int paymentId)
         {
             if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
             paymentService.UpdateStatus(paymentId, "Paid");
             TempData["Success"] = "Payment confirmed.";
             return RedirectToAction("Payments");
@@ -148,6 +166,7 @@ namespace Elxair.Controllers
         public IActionResult UpdateOrderStatus(int orderId, string status)
         {
             if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
             adminService.UpdateOrderStatus(orderId, status);
             TempData["Success"] = $"Order #{orderId} marked as {status}.";
             return RedirectToAction("Orders");

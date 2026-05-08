@@ -6,12 +6,10 @@ namespace Elxair.Models
     public class ElxairContext : DbContext
     {
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public ElxairContext(DbContextOptions<ElxairContext> options)
+       : base(options)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("Server=.;Database=Elxair;Trusted_Connection=True;TrustServerCertificate=True");
-            }
+
         }
         public DbSet<User> Users { get; set; }
 

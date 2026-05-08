@@ -7,11 +7,12 @@ namespace Elxair.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    ProductService ps = new ProductService();
+    private readonly ProductService ps;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, ProductService ps)
     {
         _logger = logger;
+        this.ps = ps;
     }
 
     public IActionResult Index()

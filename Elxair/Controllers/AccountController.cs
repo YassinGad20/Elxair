@@ -5,8 +5,12 @@ namespace Elxair.Controllers
 {
     public class AccountController : Controller
     {
-        UserService us = new UserService();
+        private readonly UserService us;
 
+        public AccountController(UserService userservice)
+        {
+            this.us = userservice;
+        }
         [HttpGet]
         public IActionResult Register() => View();
 

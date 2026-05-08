@@ -4,7 +4,12 @@ namespace Elxair.Models
 {
     public class UserService
     {
-        ElxairContext db = new ElxairContext();
+        private readonly ElxairContext db;
+
+        public UserService(ElxairContext db)
+        {
+            this.db = db;
+        }
         public void Register(User user)
         {
             user.Role = "User";

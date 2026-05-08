@@ -5,7 +5,12 @@ namespace Elxair.Models
 
     public class OrderService
     {
-        ElxairContext db = new ElxairContext();
+        private readonly ElxairContext db;
+
+        public OrderService(ElxairContext db)
+        {
+            this.db = db;
+        }
 
 
         // غير الـ return type من void لـ int

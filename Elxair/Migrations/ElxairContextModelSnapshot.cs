@@ -38,7 +38,7 @@ namespace Elxair.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("Elxair.Models.CartItem", b =>
@@ -64,7 +64,7 @@ namespace Elxair.Migrations
 
                     b.HasIndex("PerfumeSizeId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("Elxair.Models.Category", b =>
@@ -81,7 +81,7 @@ namespace Elxair.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Elxair.Models.Order", b =>
@@ -109,7 +109,7 @@ namespace Elxair.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("Elxair.Models.OrderItem", b =>
@@ -138,7 +138,7 @@ namespace Elxair.Migrations
 
                     b.HasIndex("PerfumeSizeId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("Elxair.Models.Payment", b =>
@@ -192,7 +192,7 @@ namespace Elxair.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("Elxair.Models.Perfume", b =>
@@ -230,7 +230,7 @@ namespace Elxair.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Perfumes");
+                    b.ToTable("Perfumes", (string)null);
                 });
 
             modelBuilder.Entity("Elxair.Models.PerfumeSize", b =>
@@ -258,7 +258,7 @@ namespace Elxair.Migrations
 
                     b.HasIndex("PerfumeId");
 
-                    b.ToTable("PerfumeSizes");
+                    b.ToTable("PerfumeSizes", (string)null);
                 });
 
             modelBuilder.Entity("Elxair.Models.User", b =>
@@ -287,7 +287,7 @@ namespace Elxair.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Elxair.Models.Cart", b =>

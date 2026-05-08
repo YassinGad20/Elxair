@@ -8,6 +8,47 @@
     <div class="elx-eyebrow">Our Collection</div>
     <h2 class="elx-section-title" style="color:#2c1712;">All Perfumes</h2>
 
+    <div class="container mb-5">
+        <form asp-controller="Product" asp-action="Index" method="get" class="elx-filter-bar">
+
+            <div class="elx-filter-item elx-search-item">
+                <span>Search</span>
+                <input type="text"
+                       name="search"
+                       value="@ViewBag.Search"
+                       placeholder="Name or brand..." />
+            </div>
+
+            <div class="elx-filter-item">
+                <span>Gender</span>
+                <select name="gender">
+                    <option value="">All</option>
+                    <option value="Him" selected="@(ViewBag.Gender == "Him")">For Him</option>
+                    <option value="Her" selected="@(ViewBag.Gender == "Her")">For Her</option>
+                    <option value="Unisex" selected="@(ViewBag.Gender == "Unisex")">Unisex</option>
+                </select>
+            </div>
+
+            <div class="elx-filter-item">
+                <span>Category</span>
+                <select name="categoryId">
+                    <option value="">All Categories</option>
+
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                        <option value="@category.Id" selected="@(ViewBag.CategoryId != null && ViewBag.CategoryId == category.Id)">
+                            @category.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="elx-filter-btn">Apply</button>
+
+            <a asp-controller="Product" asp-action="Index" class="elx-filter-clear">Clear</a>
+        </form>
+    </div>
+
     @if (Model == null || !Model.Any())
     {
         <div class="text-center" style="padding:60px 0;">
@@ -26,3 +67,75 @@
         </div>
     }
 </section>
+
+<style>
+    .elx-filter-bar {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 18px 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        background: #fbf7f5;
+        border: 1px solid #ead6cf;
+        border-radius: 2px;
+    }
+
+    .elx-filter-item {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 160px;
+    }
+
+        .elx-filter-item span {
+            font-size: 0.68rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #b98d7e;
+        }
+
+        .elx-filter-item input,
+        .elx-filter-item select {
+            height: 38px;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #c9aaa1;
+            color: #2c1712;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+    .elx-search-item {
+        min-width: 230px;
+    }
+
+    .elx-filter-btn {
+        align-self: end;
+        height: 38px;
+        padding: 0 28px;
+        border: 1px solid #2c1712;
+        background: #2c1712;
+        color: #fff;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+
+    .elx-filter-clear {
+        align-self: end;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        color: #8f5751;
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
+
+        .elx-filter-clear:hover {
+            color: #2c1712;
+            text-decoration: underline;
+        }
+</style>
