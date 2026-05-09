@@ -1,0 +1,69 @@
+﻿@model IEnumerable<Elxair.Models.Perfume>
+@{
+    ViewData["Title"] = "My Favorites";
+}
+
+<section class="elx-section">
+    <div class="elx-eyebrow">Personal Collection</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">My Favorites</h2>
+
+    <div class="container mb-5">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="text-center" style="padding:100px 0;">
+                <i class="fa-regular fa-heart fa-3x mb-3" style="color: #ead6cf;"></i>
+                <p style="color:#8a6056; font-size: 1.1rem;">Your favorites list is empty.</p>
+                <a asp-controller="Product" asp-action="Index"
+                   class="btn-elx-outline mt-3"
+                   style="display: inline-block; padding: 10px 30px;">
+                    Explore Collection
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4" id="favorites-grid">
+                @foreach (var p in Model)
+                {
+                    <div class="col-lg-3 col-md-6 fav-item-container" id="product-@p.Id">
+                        @await Html.PartialAsync("_ProductCard", p)
+                        <div class="text-center mt-2">
+                            <button onclick="removeFromFavorites(@p.Id)"
+                                    class="btn btn-link btn-sm"
+                                    style="color:#8f5751; text-decoration:none; font-size:0.75rem; letter-spacing:1px; text-transform:uppercase;">
+                                <i class="fa-solid fa-trash-can me-1"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        function removeFromFavorites(perfumeId) {
+            $.post('@Url.Action("ToggleFavorite", "Product")', { perfumeId: perfumeId }, function (response) {
+                if (response.success && !response.isFavorite) {
+                    $(`#product-${perfumeId}`).fadeOut(400, function () {
+                        $(this).remove();
+                        if ($('.fav-item-container').length === 0) location.reload();
+                    });
+                }
+            });
+        }
+
+        // Override toggleFavorite في صفحة المفضلات عشان يشيل الكارت مباشرة
+        toggleFavorite = function (id, btn) {
+            $.post('@Url.Action("ToggleFavorite", "Product")', { perfumeId: id }, function (response) {
+                if (response.success && !response.isFavorite) {
+                    $(`#product-${id}`).fadeOut(400, function () {
+                        $(this).remove();
+                        if ($('.fav-item-container').length === 0) location.reload();
+                    });
+                }
+            });
+        };
+    </script>
+}

@@ -12,9 +12,13 @@
 
         public string Role { get; set; }
 
-        public List<Order> Orders { get; set; }
+        public List<Order>? Orders { get; set; }
 
-        public Cart Cart { get; set; }
+
+        public Cart? Cart { get; set; }
+
+        public List<Payment>? Payments { get; set; }
+
 
     }
 }

@@ -141,6 +141,60 @@ namespace Elxair.Migrations
                     b.ToTable("OrderItems");
                 });
 
+            modelBuilder.Entity("Elxair.Models.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Governorate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Payments");
+                });
+
             modelBuilder.Entity("Elxair.Models.Perfume", b =>
                 {
                     b.Property<int>("Id")
@@ -157,6 +211,10 @@ namespace Elxair.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -232,6 +290,28 @@ namespace Elxair.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Favorite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PerfumeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PerfumeId");
+
+                    b.ToTable("Favorites");
+                });
+
             modelBuilder.Entity("Elxair.Models.Cart", b =>
                 {
                     b.HasOne("Elxair.Models.User", "User")
@@ -292,6 +372,25 @@ namespace Elxair.Migrations
                     b.Navigation("PerfumeSize");
                 });
 
+            modelBuilder.Entity("Elxair.Models.Payment", b =>
+                {
+                    b.HasOne("Elxair.Models.Order", "Order")
+                        .WithOne("Payment")
+                        .HasForeignKey("Elxair.Models.Payment", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Elxair.Models.User", "User")
+                        .WithMany("Payments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Elxair.Models.Perfume", b =>
                 {
                     b.HasOne("Elxair.Models.Category", "Category")
@@ -314,6 +413,17 @@ namespace Elxair.Migrations
                     b.Navigation("Perfume");
                 });
 
+            modelBuilder.Entity("Favorite", b =>
+                {
+                    b.HasOne("Elxair.Models.Perfume", "Perfume")
+                        .WithMany()
+                        .HasForeignKey("PerfumeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Perfume");
+                });
+
             modelBuilder.Entity("Elxair.Models.Cart", b =>
                 {
                     b.Navigation("Items");
@@ -327,6 +437,8 @@ namespace Elxair.Migrations
             modelBuilder.Entity("Elxair.Models.Order", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("Elxair.Models.Perfume", b =>
@@ -336,10 +448,11 @@ namespace Elxair.Migrations
 
             modelBuilder.Entity("Elxair.Models.User", b =>
                 {
-                    b.Navigation("Cart")
-                        .IsRequired();
+                    b.Navigation("Cart");
 
                     b.Navigation("Orders");
+
+                    b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618
         }

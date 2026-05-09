@@ -1,0 +1,62 @@
+﻿@model Elxair.Models.Perfume
+
+@{
+    // جلب أول حجم متاح لعرض سعره
+    var firstSize = Model.Sizes != null && Model.Sizes.Any() ? Model.Sizes.FirstOrDefault() : null;
+}
+
+<div class="elx-card position-relative">
+    <button class="btn fav-btn"
+            onclick="toggleFavorite(@Model.Id, this)"
+            style="position: absolute; top: 15px; right: 15px;
+               background: rgba(255, 255, 255, 0.85);
+               border-radius: 50%; width: 38px; height: 38px;
+               border: none; z-index: 10; display: flex;
+               align-items: center; justify-content: center;
+               box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+               transition: all 0.2s ease;">
+        <i class="fa-regular fa-heart"
+           style="color: #4a3728; font-size: 1.2rem; transition: all 0.2s ease;"></i>
+    </button>
+    <!-- صورة المنتج -->
+    <img src="~/images/perfumes/@Model.ImageUrl" alt="@Model.Name" class="elx-card-img" />
+
+    <div class="elx-card-body">
+        <!-- التصنيف -->
+        <div class="elx-card-cat">
+            @(Model.Category != null ? Model.Category.Name : "Perfume")
+        </div>
+
+        <!-- اسم العطر -->
+        <h4 class="elx-card-name">@Model.Name</h4>
+
+        <!-- عرض أحجام الزجاجات المتاحة -->
+        @if (Model.Sizes != null && Model.Sizes.Any())
+        {
+            <div class="elx-sizes">
+                @foreach (var s in Model.Sizes.Take(4))
+                {
+                    <span class="elx-size">@s.Size</span>
+                }
+            </div>
+        }
+
+        <!-- البراند والسعر -->
+        <div class="elx-card-price">
+            <span>@Model.Brand</span>
+            <strong>
+                @(firstSize != null ? $"{Math.Round(firstSize.Price)} EGP" : "Price N/A")
+            </strong>
+        </div>
+
+        <!-- زر الانتقال لصفحة التفاصيل -->
+        <div style="margin-top:16px;">
+            <a class="btn-elx-outline"
+               asp-controller="Product"
+               asp-action="Details"
+               asp-route-id="@Model.Id">
+                View Details
+            </a>
+        </div>
+    </div>
+</div>

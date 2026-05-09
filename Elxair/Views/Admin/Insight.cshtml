@@ -1,0 +1,368 @@
+﻿@model Elxair.Models.AdminDashboard
+@{
+    ViewData["Title"] = "Insights";
+    var categoryNamesJson = System.Text.Json.JsonSerializer.Serialize(Model.CategoryNames ?? new List<string>());
+    var categorySalesJson = System.Text.Json.JsonSerializer.Serialize(Model.CategorySales ?? new List<int>());
+    var perfumeNamesJson = System.Text.Json.JsonSerializer.Serialize(Model.PerfumeComparison?.Select(p => p.Name).ToList() ?? new List<string>());
+    var perfumeSalesJson = System.Text.Json.JsonSerializer.Serialize(Model.PerfumeComparison?.Select(p => p.SalesCount).ToList() ?? new List<int>());
+    var perfumeRevenueJson = System.Text.Json.JsonSerializer.Serialize(Model.PerfumeComparison?.Select(p => p.Revenue).ToList() ?? new List<decimal>());
+}
+
+<style>
+    .ins-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 48px 24px;
+        font-family: 'Georgia', serif;
+    }
+
+    .ins-eyebrow {
+        font-size: 0.68rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #b98d7e;
+        text-align: center;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+        .ins-eyebrow::before, .ins-eyebrow::after {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background: #d4bbb4;
+        }
+
+    .ins-title {
+        font-size: 2.2rem;
+        color: #2c1712;
+        text-align: center;
+        font-weight: 400;
+        margin-bottom: 48px;
+        letter-spacing: 1px;
+    }
+
+    /* KPI Cards */
+    .ins-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 48px;
+    }
+
+    .ins-kpi {
+        background: #fbf7f5;
+        border: 1px solid #ead6cf;
+        padding: 28px 24px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .ins-kpi::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #c9aaa1, #2c1712, #c9aaa1);
+        }
+
+    .ins-kpi-label {
+        font-size: 0.65rem;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: #b98d7e;
+        margin-bottom: 10px;
+    }
+
+    .ins-kpi-value {
+        font-size: 2rem;
+        color: #2c1712;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+    }
+
+    .ins-kpi-sub {
+        font-size: 0.75rem;
+        color: #a07060;
+        margin-top: 4px;
+    }
+
+    /* Chart Cards */
+    .ins-chart-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+
+    .ins-chart-card {
+        background: #fbf7f5;
+        border: 1px solid #ead6cf;
+        padding: 28px;
+    }
+
+    .ins-chart-card-full {
+        background: #fbf7f5;
+        border: 1px solid #ead6cf;
+        padding: 28px;
+        margin-bottom: 24px;
+    }
+
+    .ins-chart-title {
+        font-size: 0.65rem;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: #b98d7e;
+        margin-bottom: 20px;
+    }
+
+    canvas {
+        max-height: 280px;
+    }
+
+    /* Table */
+    .ins-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+    }
+
+        .ins-table thead tr {
+            border-bottom: 2px solid #2c1712;
+        }
+
+        .ins-table th {
+            font-size: 0.62rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #b98d7e;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 400;
+        }
+
+        .ins-table td {
+            padding: 12px 12px;
+            color: #2c1712;
+            border-bottom: 1px solid #ead6cf;
+        }
+
+        .ins-table tbody tr:hover {
+            background: #f5ede9;
+        }
+
+    .ins-rank {
+        font-size: 0.7rem;
+        color: #b98d7e;
+        width: 24px;
+    }
+
+    .ins-bar-inline {
+        height: 4px;
+        background: linear-gradient(90deg, #c9aaa1, #2c1712);
+        border-radius: 2px;
+        margin-top: 4px;
+    }
+
+    @@media (max-width: 768px) {
+        .ins-chart-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<section class="ins-section">
+    <div class="ins-eyebrow">Analytics</div>
+    <h2 class="ins-title">Store Insights</h2>
+
+    <!-- KPI Cards -->
+    <div class="ins-kpi-grid">
+        <div class="ins-kpi">
+            <div class="ins-kpi-label">Total Revenue</div>
+            <div class="ins-kpi-value">@Math.Round(Model.TotalRevenue).ToString("N0")</div>
+            <div class="ins-kpi-sub">EGP</div>
+        </div>
+        <div class="ins-kpi">
+            <div class="ins-kpi-label">Total Orders</div>
+            <div class="ins-kpi-value">@Model.TotalOrders</div>
+            <div class="ins-kpi-sub">Orders placed</div>
+        </div>
+        <div class="ins-kpi">
+            <div class="ins-kpi-label">Avg. Order Value</div>
+            <div class="ins-kpi-value">
+                @(Model.TotalOrders > 0 ? Math.Round(Model.TotalRevenue / Model.TotalOrders).ToString("N0") : "0")
+            </div>
+            <div class="ins-kpi-sub">EGP per order</div>
+        </div>
+        <div class="ins-kpi">
+            <div class="ins-kpi-label">Top Perfume</div>
+            <div class="ins-kpi-value" style="font-size:1.1rem; padding-top:6px;">
+                @(Model.PerfumeComparison != null && Model.PerfumeComparison.Any() ? Model.PerfumeComparison.First().Name : "—")
+            </div>
+            <div class="ins-kpi-sub">Best seller</div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="ins-chart-grid">
+        <!-- Category Doughnut -->
+        <div class="ins-chart-card">
+            <div class="ins-chart-title">Sales by Category</div>
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+        <!-- Top Perfumes Bar -->
+        <div class="ins-chart-card">
+            <div class="ins-chart-title">Top Perfumes — Units Sold</div>
+            <canvas id="perfumeBarChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Revenue Bar Full Width -->
+    <div class="ins-chart-card-full">
+        <div class="ins-chart-title">Revenue by Perfume (EGP)</div>
+        <canvas id="revenueChart" style="max-height:240px;"></canvas>
+    </div>
+
+    <!-- Perfume Table -->
+    <div class="ins-chart-card-full">
+        <div class="ins-chart-title">Perfume Performance Details</div>
+        @if (Model.PerfumeComparison != null && Model.PerfumeComparison.Any())
+        {
+            var maxSales = Model.PerfumeComparison.Max(p => p.SalesCount);
+            <table class="ins-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Perfume</th>
+                        <th>Units Sold</th>
+                        <th>Revenue (EGP)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.PerfumeComparison.Count; i++)
+                    {
+                        var p = Model.PerfumeComparison[i];
+                        var barWidth = maxSales > 0 ? (p.SalesCount * 100 / maxSales) : 0;
+                        <tr>
+                            <td class="ins-rank">@(i + 1)</td>
+                            <td>
+                                @p.Name
+                                <div class="ins-bar-inline" style="width:@(barWidth)%;"></div>
+                            </td>
+                            <td>@p.SalesCount</td>
+                            <td>@Math.Round(p.Revenue).ToString("N0")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p style="color:#8a6056; text-align:center; padding:40px 0;">No sales data available.</p>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const categoryNames  = @Html.Raw(categoryNamesJson);
+        const categorySales  = @Html.Raw(categorySalesJson);
+        const perfumeNames   = @Html.Raw(perfumeNamesJson);
+        const perfumeSales   = @Html.Raw(perfumeSalesJson);
+        const perfumeRevenue = @Html.Raw(perfumeRevenueJson);
+
+        const palette = [
+            '#2c1712','#6b4a42','#a07060','#c9aaa1',
+            '#ead6cf','#b98d7e','#8f5751','#d4bbb4'
+        ];
+
+        // Doughnut — Category
+        new Chart(document.getElementById('categoryChart'), {
+            type: 'doughnut',
+            data: {
+                labels: categoryNames,
+                datasets: [{
+                    data: categorySales,
+                    backgroundColor: palette,
+                    borderWidth: 0,
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#2c1712', font: { size: 11 }, padding: 12 }
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+
+        // Bar — Top Perfumes Units
+        new Chart(document.getElementById('perfumeBarChart'), {
+            type: 'bar',
+            data: {
+                labels: perfumeNames.slice(0, 8),
+                datasets: [{
+                    label: 'Units Sold',
+                    data: perfumeSales.slice(0, 8),
+                    backgroundColor: '#2c1712',
+                    borderRadius: 2,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        grid: { color: '#ead6cf' },
+                        ticks: { color: '#6b4a42', font: { size: 10 } }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: '#2c1712', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // Bar — Revenue
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'bar',
+            data: {
+                labels: perfumeNames.slice(0, 10),
+                datasets: [{
+                    label: 'Revenue (EGP)',
+                    data: perfumeRevenue.slice(0, 10),
+                    backgroundColor: '#a07060',
+                    borderRadius: 2,
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#2c1712', font: { size: 10 } }
+                    },
+                    y: {
+                        grid: { color: '#ead6cf' },
+                        ticks: {
+                            color: '#6b4a42',
+                            font: { size: 10 },
+                            callback: v => v.toLocaleString() + ' EGP'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

@@ -1,0 +1,111 @@
+﻿@model Elxair.Models.Order
+@{
+    ViewData["Title"] = "Order Details";
+    var total = Model.Items?.Sum(i => i.Quantity * i.Price) ?? 0;
+    var payment = ViewBag.Payment as Elxair.Models.Payment;
+}
+
+<section class="elx-section" style="max-width:800px; margin:0 auto;">
+    <div class="elx-eyebrow">Administration</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Order #@Model.Id — Details</h2>
+
+    <!-- Order Info -->
+    <div style="background:#fbf7f5; border:1px solid #ead6cf; padding:24px; margin-bottom:28px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div>
+                <div style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e; margin-bottom:4px;">Customer</div>
+                <div style="color:#2c1712; font-size:1rem;">@(Model.User?.Name ?? "Unknown")</div>
+            </div>
+            <div>
+                <div style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e; margin-bottom:4px;">Status</div>
+                <div style="color:#2c1712; font-size:1rem;">@Model.Status</div>
+            </div>
+            <div>
+                <div style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e; margin-bottom:4px;">Order Date</div>
+                <div style="color:#2c1712; font-size:1rem;">@Model.OrderDate.ToString("dd MMM yyyy")</div>
+            </div>
+            <div>
+                <div style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e; margin-bottom:4px;">Total Items</div>
+                <div style="color:#2c1712; font-size:1rem;">@(Model.Items?.Count ?? 0)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivery Info -->
+    <div style="background:#fbf7f5; border:1px solid #ead6cf; padding:24px; margin-bottom:28px;">
+        <div style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e; margin-bottom:16px;">
+            Delivery Information
+        </div>
+        @if (payment != null)
+        {
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <div style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e; margin-bottom:4px;">Full Name</div>
+                    <div style="color:#2c1712;">@payment.FullName</div>
+                </div>
+                <div>
+                    <div style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e; margin-bottom:4px;">Phone</div>
+                    <div style="color:#2c1712;">@payment.Phone</div>
+                </div>
+                <div>
+                    <div style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e; margin-bottom:4px;">Governorate</div>
+                    <div style="color:#2c1712;">@payment.Governorate</div>
+                </div>
+                <div>
+                    <div style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e; margin-bottom:4px;">Address</div>
+                    <div style="color:#2c1712;">@payment.Address</div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p style="color:#8a6056; text-align:center;">No delivery information available.</p>
+        }
+    </div>
+
+    <!-- Items Table -->
+    <div style="background:#fbf7f5; border:1px solid #ead6cf; padding:24px; margin-bottom:28px;">
+        <div style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e; margin-bottom:16px;">Order Items</div>
+        <table class="elx-table">
+            <thead>
+                <tr>
+                    <th>Perfume</th>
+                    <th>Size</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Items != null && Model.Items.Any())
+                {
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>@(item.PerfumeSize?.Perfume?.Name ?? "—")</td>
+                            <td>@(item.PerfumeSize?.Size ?? "—")</td>
+                            <td>@item.Quantity</td>
+                            <td>@Math.Round(item.Price).ToString("N0") EGP</td>
+                            <td>@Math.Round(item.Quantity * item.Price).ToString("N0") EGP</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="5" style="text-align:center; color:#8a6056;">No items found.</td></tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Total -->
+        <div style="text-align:right; margin-top:20px; padding-top:16px; border-top:1px solid #ead6cf;">
+            <span style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e;">Total</span>
+            <span style="font-size:1.4rem; color:#2c1712; font-weight:600; margin-left:16px;">
+                @Math.Round(total).ToString("N0") EGP
+            </span>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <a class="btn-elx-outline" asp-action="Orders">← Back to Orders</a>
+</section>

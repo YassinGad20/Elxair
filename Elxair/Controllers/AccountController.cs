@@ -5,28 +5,38 @@ namespace Elxair.Controllers
 {
     public class AccountController : Controller
     {
-        UserService us = new UserService();
+        private readonly UserService us;
 
+        public AccountController(UserService userservice)
+        {
+            this.us = userservice;
+        }
+        [HttpGet]
+        public IActionResult Register() => View();
+
+        [HttpPost]
         public IActionResult Register(User user)
         {
-            if (!ModelState.IsValid)
-                return View(user);
+            user.Role = "User";
+            ModelState.Remove("Role");
 
-            // التأكد إن الإيميل مش موجود
+            if (!ModelState.IsValid) return View(user);
+
             if (us.EmailExists(user.Email))
             {
                 ViewBag.Error = "Email already exists";
                 return View(user);
             }
 
-            // تحديد نوع المستخدم
-            user.Role = "User";
-
-            // تسجيل المستخدم
             us.Register(user);
-
+            TempData["Success"] = "Account created successfully. Please login.";
             return RedirectToAction("Login");
         }
+
+        [HttpGet]
+        public IActionResult Login() => View();
+
+        [HttpPost]
         public IActionResult Login(string email, string password)
         {
             var user = us.Login(email, password);
@@ -37,11 +47,21 @@ namespace Elxair.Controllers
                 return View();
             }
 
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("UserName", user.Name);
+            HttpContext.Session.SetString("UserRole", user.Role);
+
             if (user.Role == "Admin")
                 return RedirectToAction("Dashboard", "Admin");
 
-            return RedirectToAction("Index", "Product");
+            TempData["Success"] = $"Welcome back, {user.Name}!";
+            return RedirectToAction("Index", "Home");
         }
 
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
+        }
     }
 }

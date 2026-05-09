@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<section class="elx-section">
+    <div class="elx-eyebrow">Account</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Welcome Back</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="elx-card">
+                <div class="elx-card-body p-4 p-md-5">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="elx-alert elx-alert-danger mb-4">
+                            <i class="bi bi-exclamation-circle me-2"></i>@ViewBag.Error
+                        </div>
+                    }
+
+                    <form asp-action="Login" method="post">
+                        <div class="mb-3">
+                            <label class="elx-label">Email</label>
+                            <input name="email" type="email" class="elx-input" placeholder="Enter your email" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="elx-label">Password</label>
+                            <input name="password" type="password" class="elx-input" placeholder="Enter your password" />
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn-elx-outline justify-content-center">
+                                Login
+                            </button>
+                        </div>
+
+                        <div class="text-center" style="font-size:0.9rem; color:#6b4a42;">
+                            Don’t have an account?
+                            <a asp-controller="Account" asp-action="Register" style="color:#8f5751; text-decoration:none; font-weight:500;">
+                                Register here
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,98 @@
+﻿@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Elixir Analytics";
+    var exchangeRate = 50m;
+}
+
+<style>
+    /* تحسين شكل الحاوية لتكون أكبر وأوضح */
+    .chart-container {
+        width: 90%;
+        margin: 40px auto 80px auto; /* مسافة كبيرة من الأسفل عن الـ Footer */
+        background-color: #fdfaf8; /* لون كريمي هادي جداً */
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .chart-header {
+        font-family: 'Playfair Display', serif;
+        color: #4a3728;
+        text-align: center;
+        margin-bottom: 30px;
+        letter-spacing: 1px;
+    }
+</style>
+
+<div class="chart-container">
+    <h2 class="chart-header">Monthly Profit Projections</h2>
+    <div style="position: relative; height:60vh; width:100%;">
+        <canvas id="profitChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+<script>
+    const perfumes = @Html.Raw(Json.Serialize(Model.Select(m => m.Name)));
+    const profitsInEgp = @Html.Raw(Json.Serialize(Model.Select(m => Math.Round((decimal)m.Profit * exchangeRate))));
+
+    const ctx = document.getElementById('profitChart').getContext('2d');
+
+    // ألوان هادئة ومتناسقة (Nude & Earthy tones)
+    const softCoffee = '#bc9c82';
+    const deepMocha = '#4a3728';
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: perfumes,
+            datasets: [{
+                label: 'Estimated Profit (EGP)',
+                data: profitsInEgp,
+                backgroundColor: 'rgba(188, 156, 130, 0.4)', // لون نود هادي شفاف
+                borderColor: softCoffee,
+                borderWidth: 1.5,
+                hoverBackgroundColor: 'rgba(74, 55, 40, 0.7)', // يغمق عند الوقوف عليه
+                borderRadius: 12,
+                barPercentage: 0.5
+            }]
+        },
+        plugins: [ChartDataLabels],
+        options: {
+            maintainAspectRatio: false, // عشان نتحكم في الطول بحرية
+            responsive: true,
+            plugins: {
+                legend: { display: false }, // أخفينا الـ Legend عشان نخلي الشكل أنضف (Clean Look)
+                datalabels: {
+                    anchor: 'end',
+                    align: 'top',
+                    offset: 10,
+                    formatter: (value) => value.toLocaleString(),
+                    font: { size: 13, weight: '600', family: 'Segoe UI' },
+                    color: deepMocha
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grace: '15%',
+                    grid: { color: 'rgba(0, 0, 0, 0.03)' },
+                    ticks: {
+                        color: softCoffee,
+                        font: { size: 12 },
+                        callback: (value) => value.toLocaleString()
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        color: deepMocha,
+                        font: { size: 12, weight: '500' }
+                    }
+                }
+            }
+        }
+    });
+</script>

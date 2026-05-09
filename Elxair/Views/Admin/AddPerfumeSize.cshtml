@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Add Perfume Size";
+}
+
+<section class="elx-section">
+    <div class="elx-eyebrow">Administration</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Add Perfume Size</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="elx-card">
+                <div class="elx-card-body">
+                    <form asp-action="AddPerfumeSize" method="post">
+                        <input type="hidden" name="perfumeId" value="@ViewBag.PerfumeId" />
+
+                        <div class="mb-3">
+                            <label class="elx-label">Size</label>
+                            <input name="size" class="elx-input" placeholder="e.g. 5ML" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="elx-label">Price</label>
+                            <input name="price" type="number" step="0.01" class="elx-input" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="elx-label">Stock</label>
+                            <input name="stock" type="number" class="elx-input" />
+                        </div>
+
+                        <div style="display:flex;gap:12px;">
+                            <button type="submit" class="btn-elx-outline">Save</button>
+                            <a asp-action="Products" class="btn-elx-outline">Back</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

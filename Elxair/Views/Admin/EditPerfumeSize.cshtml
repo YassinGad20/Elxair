@@ -1,0 +1,43 @@
+﻿@model Elxair.Models.PerfumeSize
+@{
+    ViewData["Title"] = "Edit Size";
+}
+
+<section class="elx-section" style="max-width:500px; margin:0 auto;">
+    <div class="elx-eyebrow">Administration</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Edit Size</h2>
+
+    <div style="background:#fbf7f5; border:1px solid #ead6cf; padding:32px;">
+        <form asp-action="EditPerfumeSize" asp-controller="Admin" method="post">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="PerfumeId" />
+
+            <div style="margin-bottom:20px;">
+                <div style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e; margin-bottom:8px;">Size</div>
+                <input asp-for="Size"
+                       style="width:100%; border:none; border-bottom:1px solid #c9aaa1; background:transparent; padding:8px 0; color:#2c1712; font-size:0.95rem; outline:none;" />
+                <span asp-validation-for="Size" style="color:#c0392b; font-size:0.8rem;"></span>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <div style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e; margin-bottom:8px;">Price (EGP)</div>
+                <input asp-for="Price" type="number" step="0.01"
+                       style="width:100%; border:none; border-bottom:1px solid #c9aaa1; background:transparent; padding:8px 0; color:#2c1712; font-size:0.95rem; outline:none;" />
+                <span asp-validation-for="Price" style="color:#c0392b; font-size:0.8rem;"></span>
+            </div>
+
+            <div style="margin-bottom:32px;">
+                <div style="font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:#b98d7e; margin-bottom:8px;">Stock</div>
+                <input asp-for="Stock" type="number"
+                       style="width:100%; border:none; border-bottom:1px solid #c9aaa1; background:transparent; padding:8px 0; color:#2c1712; font-size:0.95rem; outline:none;" />
+                <span asp-validation-for="Stock" style="color:#c0392b; font-size:0.8rem;"></span>
+            </div>
+
+            <div style="display:flex; gap:12px;">
+                <button type="submit" class="btn-elx-outline" style="flex:1; text-align:center;">Save Changes</button>
+                <a class="btn-elx-outline" asp-action="EditPerfume" asp-route-id="@Model.PerfumeId"
+                   style="flex:1; text-align:center;">← Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
