@@ -5,6 +5,8 @@ namespace Elxair.Models
 {
     public class ElxairContext : DbContext
     {
+
+     
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

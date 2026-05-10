@@ -22,6 +22,12 @@ public class HomeController : Controller
     {
         var perfumes = ps.GetAllPerfumes();
 
+        ViewBag.Bestsellers = perfumes.Take(4).ToList();
+        ViewBag.ForHim = perfumes.Where(p => p.Gender == "Him").Take(4).ToList();
+        ViewBag.ForHer = perfumes.Where(p => p.Gender == "Her").Take(4).ToList();
+        ViewBag.Unisex = perfumes.Where(p => p.Gender == "Unisex").Take(4).ToList();
+
+
         // Bestsellers 
         var topSellingIds = _context.OrderItems
             .GroupBy(oi => oi.PerfumeSize.PerfumeId)
