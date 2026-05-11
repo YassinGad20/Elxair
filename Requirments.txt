@@ -1,0 +1,19 @@
+## 🧠 Machine Learning API (FastAPI)
+
+The project includes a dedicated REST API to serve the Machine Learning model for profit forecasting. Follow these steps to set up the environment and run the server:
+
+### 1. Environment Setup
+It is recommended to use a virtual environment to avoid library conflicts:
+```bash
+# Create a virtual environment
+python -m venv venv
+
+# Activate the environment
+# On Windows:
+venv\Scripts\activate
+
+# Install Libraries 
+pip install fastapi uvicorn pandas joblib pydantic
+
+# Launching Api
+uvicorn main:app --reload
