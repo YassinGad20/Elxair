@@ -147,7 +147,6 @@ namespace Elxair.Controllers
 
             var perfume = adminService.GetAllPerfumes().FirstOrDefault(p => p.Id == id);
 
-            var perfume = adminService.GetAllPerfumes().FirstOrDefault(p => p.Id == id);
 
             if (perfume == null)
                 return NotFound();

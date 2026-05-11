@@ -51,4 +51,20 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+// شغّل الـ Python API في الخلفية
+var pythonProcess = new System.Diagnostics.Process
+{
+    StartInfo = new System.Diagnostics.ProcessStartInfo
+    {
+        FileName = @"D:\Fci 2025-2026\Software Development\Elxair_Project\Elxair\API\FastMl\Scripts\uvicorn.exe",
+        Arguments = "Api:app --reload",
+        WorkingDirectory = @"D:\Fci 2025-2026\Software Development\Elxair_Project\Elxair\API",
+        UseShellExecute = false,
+        CreateNoWindow = true,
+    }
+};
+pythonProcess.Start();
+
+app.Run();
+
 app.Run();

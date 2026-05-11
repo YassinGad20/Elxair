@@ -65,5 +65,18 @@ namespace Elxair.Controllers
             var orders = os.GetUserOrders(userId.Value);
             return View(orders);
         }
+
+        public IActionResult Details(int id)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login", "Account");
+
+            var order = os.GetUserOrders(userId.Value)
+                          .FirstOrDefault(o => o.Id == id);
+
+            if (order == null) return NotFound();
+
+            return View(order);
+        }
     }
 }
