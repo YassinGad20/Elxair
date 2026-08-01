@@ -1,0 +1,56 @@
+﻿@model IEnumerable<Elxair.Models.Promotion>
+@{
+    ViewData["Title"] = "Promotions";
+}
+<section class="elx-section">
+    <div class="elx-eyebrow">Administration</div>
+    <h2 class="elx-section-title" style="color:#2c1712;">Promotions</h2>
+
+    <div style="display:flex; justify-content:flex-end; margin-bottom:24px;">
+        <a class="btn-elx-outline" asp-action="Create">+ Create Promotion</a>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="elx-card">
+            <div class="elx-card-body" style="text-align:center; color:#6b4a42;">
+                No promotions found.
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="elx-card">
+                        <div class="elx-card-body">
+                            <div class="elx-card-cat">@item.PromotionType</div>
+                            <h4 class="elx-card-name">@item.Name</h4>
+                            <p style="color:#6b4a42;">
+                                @if (item.PromotionType == PromotionType.Percentage)
+                                {
+                                    @($"{item.Value}% off")
+                                }
+                                else
+                                {
+                                    @($"{item.Value} EGP off")
+                                }
+                                &nbsp;·&nbsp;
+                                @item.StartDate.ToShortDateString() – @item.EndDate.ToShortDateString()
+                                &nbsp;·&nbsp;
+                                @(item.IsActive ? "Active" : "Inactive")
+                            </p>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <a class="btn-elx-outline" asp-action="Assign" asp-route-id="@item.Id">Products</a>
+                                <a class="btn-elx-outline" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                                <a class="btn-elx-outline" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>

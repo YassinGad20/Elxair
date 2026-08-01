@@ -1,33 +1,30 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Elxair.Models
+﻿public class PredictionRequest
 {
-    public class PredictionRequest
-    {
-        [JsonPropertyName("Size")]
-        public string Size { get; set; }
 
-        [JsonPropertyName("Sold In Season")]
-        public string SoldInSeason { get; set; }
+    public int PerfumeId { get; set; }
 
-        [JsonPropertyName("Perfume Demand")]
-        public int PerfumeDemand { get; set; }
+    public int PerfumeSizeId { get; set; }
 
-        [JsonPropertyName("Unit Price")]
-        public float UnitPrice { get; set; }
+    public string PerfumeName { get; set; }
 
-        [JsonPropertyName("Gender")]
-        public string Gender { get; set; }
+    public string Month { get; set; }
 
-        [JsonPropertyName("Category")]
-        public string Category { get; set; }
+    public string BottleSize { get; set; }
 
-        [JsonPropertyName("Perfume Season")] // ضيف ده عشان الموديل ميدي مش Error
-        public string PerfumeSeason { get; set; } = "Winter";
-    }
+    public int BottleVolume { get; set; }
 
-    public class PredictionResponse
-    {
-        public decimal PredictedProfit { get; set; }
-    }
+    public string Category { get; set; }
+
+    public string Gender { get; set; }
+
+    public string Season { get; set; }
+
+    public int SoldInSeason { get; set; }
+
+    public string PriceCategory { get; set; }
+
+    public int NumberOfTransactions { get; set; }
+
+    public double AvgDiscount { get; set; }
+    public double AvgMarginProfit { get; set; }
 }

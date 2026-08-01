@@ -1,0 +1,350 @@
+﻿@model List<Elxair.Models.Report>
+@{
+    ViewData["Title"] = "Reports History";
+    Layout = "_Layout";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --rh-bg: #FBF7F1;
+        --rh-card: #FFFFFF;
+        --rh-border: #EAE0D2;
+        --rh-text: #2E2118;
+        --rh-text-soft: #5B4E42;
+        --rh-muted: #9C8C79;
+        --rh-gold: #B8935B;
+        --rh-gold-dark: #8F6F40;
+        --rh-gold-bg: #F6EEE1;
+        --rh-rose: #C77B82;
+        --rh-rose-bg: #FBEEEF;
+        --rh-sage: #7C9583;
+        --rh-shadow: 0 4px 24px rgba(46,33,24,0.06);
+        --rh-radius: 14px;
+    }
+
+    .rh-wrap {
+        background: var(--rh-bg);
+        color: var(--rh-text);
+        font-family: 'Poppins',sans-serif;
+        padding: 48px 0 80px;
+        min-height: 100%;
+    }
+
+        .rh-wrap .container-xl {
+            max-width: 1200px;
+        }
+
+    .rh-breadcrumb {
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--rh-muted);
+        margin-bottom: 18px;
+    }
+
+        .rh-breadcrumb a {
+            color: var(--rh-muted);
+            text-decoration: none;
+        }
+
+            .rh-breadcrumb a:hover {
+                color: var(--rh-gold-dark);
+            }
+
+        .rh-breadcrumb .sep {
+            margin: 0 8px;
+            opacity: .5;
+        }
+
+        .rh-breadcrumb .current {
+            color: var(--rh-text-soft);
+        }
+
+    .rh-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 32px;
+        padding-bottom: 26px;
+        border-bottom: 1px solid var(--rh-border);
+    }
+
+    .rh-eyebrow {
+        font-size: 11px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--rh-gold-dark);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .rh-title {
+        font-family: 'Playfair Display',serif;
+        font-weight: 600;
+        font-size: 2.3rem;
+        margin: 0 0 6px;
+    }
+
+    .rh-subtitle {
+        color: var(--rh-muted);
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .rh-count-badge {
+        font-size: 11px;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: var(--rh-muted);
+        border: 1px solid var(--rh-border);
+        padding: 8px 16px;
+        border-radius: 30px;
+        background: var(--rh-card);
+        white-space: nowrap;
+    }
+
+        .rh-count-badge b {
+            color: var(--rh-gold-dark);
+            font-weight: 600;
+        }
+
+    .rh-card {
+        background: var(--rh-card);
+        border: 1px solid var(--rh-border);
+        border-radius: var(--rh-radius);
+        box-shadow: var(--rh-shadow);
+        overflow: hidden;
+    }
+
+    .rh-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13.5px;
+        margin: 0;
+    }
+
+        .rh-table thead th {
+            text-align: left;
+            font-size: 11px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--rh-muted);
+            font-weight: 600;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--rh-border);
+            background: #FCFAF6;
+            white-space: nowrap;
+        }
+
+        .rh-table tbody td {
+            padding: 14px 18px;
+            border-bottom: 1px solid #F3EDE3;
+            color: var(--rh-text-soft);
+            vertical-align: middle;
+        }
+
+        .rh-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .rh-table tbody tr {
+            transition: background .15s ease;
+        }
+
+            .rh-table tbody tr:hover {
+                background: var(--rh-gold-bg);
+            }
+
+        .rh-table td.num, .rh-table th.num {
+            text-align: right;
+        }
+
+    .rh-month-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: 'Playfair Display',serif;
+        font-weight: 600;
+        color: var(--rh-text);
+    }
+
+    .rh-year {
+        color: var(--rh-muted);
+        font-size: 12.5px;
+    }
+
+    .rh-profit {
+        color: var(--rh-gold-dark);
+        font-weight: 600;
+    }
+
+    .rh-generated {
+        color: var(--rh-muted);
+        font-size: 12.5px;
+    }
+
+    .rh-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: nowrap;
+    }
+
+    .rh-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-weight: 500;
+        padding: 8px 14px;
+        border-radius: 7px;
+        text-decoration: none;
+        border: 1px solid var(--rh-border);
+        background: transparent;
+        color: var(--rh-text-soft);
+        transition: all .2s ease;
+        white-space: nowrap;
+    }
+
+        .rh-btn svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        .rh-btn:hover {
+            border-color: var(--rh-gold);
+            color: var(--rh-gold-dark);
+            background: var(--rh-gold-bg);
+        }
+
+        .rh-btn.rh-btn-pdf:hover {
+            border-color: var(--rh-rose);
+            color: var(--rh-rose);
+            background: var(--rh-rose-bg);
+        }
+
+        .rh-btn.rh-btn-delete {
+            color: var(--rh-rose);
+            border-color: var(--rh-rose-bg);
+        }
+
+            .rh-btn.rh-btn-delete:hover {
+                background: var(--rh-rose-bg);
+                border-color: var(--rh-rose);
+                color: var(--rh-rose);
+            }
+
+    .rh-empty {
+        text-align: center;
+        padding: 70px 20px;
+        color: var(--rh-muted);
+    }
+
+        .rh-empty svg {
+            width: 40px;
+            height: 40px;
+            color: var(--rh-gold);
+            margin-bottom: 14px;
+            opacity: .7;
+        }
+
+    .rh-empty-title {
+        font-family: 'Playfair Display',serif;
+        font-size: 1.2rem;
+        color: var(--rh-text);
+        margin-bottom: 6px;
+    }
+</style>
+
+<div class="rh-wrap">
+    <div class="container-xl">
+
+        <div class="rh-breadcrumb">
+            <a href="/Admin/Dashboard">Home</a><span class="sep">/</span>
+            <a href="/Admin/Dashboard">Admin</a><span class="sep">/</span>
+            <span class="current">Reports History</span>
+        </div>
+
+        <div class="rh-header">
+            <div>
+                <div class="rh-eyebrow">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6M9 13h6M9 17h6M9 9h1" /></svg>
+                    Archive
+                </div>
+                <h1 class="rh-title">Reports History</h1>
+                <p class="rh-subtitle">Every generated forecast report, ready to review or export</p>
+            </div>
+            <div class="rh-count-badge"><b>@Model.Count</b>&nbsp; report@(Model.Count == 1 ? "" : "s") on file</div>
+        </div>
+
+        <div class="rh-card">
+            @if (Model != null && Model.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="rh-table">
+                        <thead>
+                            <tr>
+                                <th>Period</th>
+                                <th>Generated</th>
+                                <th class="num">Profit</th>
+                                <th class="num">Units</th>
+                                <th>Export</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var report in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="rh-month-pill">@report.ReportMonth</span>
+                                        <span class="rh-year">&nbsp;@report.ReportYear</span>
+                                    </td>
+                                    <td class="rh-generated">@report.GeneratedAt.ToString("dd MMM yyyy HH:mm")</td>
+                                    <td class="num rh-profit">@report.TotalPredictedProfit.ToString("N0") EGP</td>
+                                    <td class="num">@report.TotalPredictedUnits.ToString("N0")</td>
+                                    <td>
+                                        <div class="rh-actions">
+                                            <a asp-action="DownloadPdf" asp-route-id="@report.ReportId" class="rh-btn rh-btn-pdf">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6" /></svg>
+                                                PDF
+                                            </a>
+                                            <a asp-action="DownloadJson" asp-route-id="@report.ReportId" class="rh-btn">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6" /></svg>
+                                                JSON
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a asp-action="DeleteReport" asp-route-id="@report.ReportId" class="rh-btn rh-btn-delete"
+                                           onclick="return confirm('Delete the @report.ReportMonth @report.ReportYear report? This cannot be undone.');">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6" /></svg>
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="rh-empty">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6M9 13h6M9 17h6" /></svg>
+                    <div class="rh-empty-title">No reports yet</div>
+                    <div>Generated forecast reports will appear here once created.</div>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>

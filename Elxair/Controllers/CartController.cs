@@ -1,34 +1,50 @@
 ﻿using Elxair.Models;
 using Microsoft.AspNetCore.Mvc;
-
+using Elxair.Services;
+using Elxair.ViewModels;
 public class CartController : Controller
 {
     private readonly CartService cs;
+    private readonly IPromotionService promotionService;
 
-    public CartController(CartService cs)
+    public CartController(
+        CartService cs,
+        IPromotionService promotionService)
     {
         this.cs = cs;
+        this.promotionService = promotionService;
     }
 
     public IActionResult Index()
     {
-        int? userId = HttpContext.Session.GetInt32("UserId");
-        if (userId == null) return RedirectToAction("Login", "Account");
+        var items = cs.GetUserCart();
 
-        var cartItems = cs.GetUserCart(userId.Value);
-        var userCart = new Cart { UserId = userId.Value, Items = cartItems };
-        return View(userCart);
+        var vm = new CartVM
+        {
+            Items = items
+        };
+
+        foreach (var item in items)
+        {
+            var size = item.PerfumeSize;
+
+            vm.Promotions[size.Id] = promotionService.GetActivePromotion(size);
+
+            vm.FinalPrices[size.Id] = promotionService.GetDiscountedPrice(size);
+
+            vm.DiscountPercentages[size.Id] =
+                promotionService.GetDiscountPercentage(size);
+        }
+
+        return View(vm);
     }
 
     [HttpPost]
     public IActionResult AddToCart(int perfumeSizeId, int quantity = 1)
     {
-        int? userId = HttpContext.Session.GetInt32("UserId");
-        if (userId == null) return RedirectToAction("Login", "Account");
-
         try
         {
-            cs.AddToCart(userId.Value, perfumeSizeId, quantity);
+            cs.AddToCart(perfumeSizeId, quantity);
             TempData["Success"] = "Added to cart successfully!";
         }
         catch (Exception ex)
@@ -38,13 +54,19 @@ public class CartController : Controller
 
         return RedirectToAction("Index");
     }
+
     [HttpPost]
     public IActionResult RemoveFromCart(int itemId)
     {
-        int? userId = HttpContext.Session.GetInt32("UserId");
-        if (userId == null) return RedirectToAction("Login", "Account");
+        try
+        {
+            cs.RemoveFromCart(itemId);
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
 
-        cs.RemoveFromCart(itemId);
         return RedirectToAction("Index");
     }
 }

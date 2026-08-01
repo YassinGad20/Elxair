@@ -1,0 +1,195 @@
+{
+  "ReportMonth": 7,
+  "ReportYear": 2026,
+  "TotalPredictedProfit": 1237880.00,
+  "TotalPredictedUnits": 9498,
+  "TotalProductsCount": 144,
+  "TopPerformer": {
+    "PerfumeId": 1,
+    "PerfumeSizeId": 5,
+    "PerfumeName": "Bleu de Chanel",
+    "CategoryName": "Oriental",
+    "Gender": "Male",
+    "Size": "50ml",
+    "PredictedQuantity": 81,
+    "PredictedProfit": 20250.00
+  },
+  "LowestPerformer": {
+    "PerfumeId": 5,
+    "PerfumeSizeId": 25,
+    "PerfumeName": "Versace Eros",
+    "CategoryName": "Oriental",
+    "Gender": "Male",
+    "Size": "5ml",
+    "PredictedQuantity": 52,
+    "PredictedProfit": 1560.00
+  },
+  "Top10Products": [
+    {
+      "PerfumeId": 1,
+      "PerfumeSizeId": 5,
+      "PerfumeName": "Bleu de Chanel",
+      "CategoryName": "Oriental",
+      "Gender": "Male",
+      "Size": "50ml",
+      "PredictedQuantity": 81,
+      "PredictedProfit": 20250.00
+    },
+    {
+      "PerfumeId": 1,
+      "PerfumeSizeId": 6,
+      "PerfumeName": "Bleu de Chanel",
+      "CategoryName": "Oriental",
+      "Gender": "Male",
+      "Size": "100ml",
+      "PredictedQuantity": 73,
+      "PredictedProfit": 18250.00
+    },
+    {
+      "PerfumeId": 4,
+      "PerfumeSizeId": 23,
+      "PerfumeName": "Acqua di Gio",
+      "CategoryName": "Oriental",
+      "Gender": "Male",
+      "Size": "50ml",
+      "PredictedQuantity": 73,
+      "PredictedProfit": 18250.00
+    },
+    {
+      "PerfumeId": 4,
+      "PerfumeSizeId": 24,
+      "PerfumeName": "Acqua di Gio",
+      "CategoryName": "Oriental",
+      "Gender": "Male",
+      "Size": "100ml",
+      "PredictedQuantity": 72,
+      "PredictedProfit": 18000.00
+    },
+    {
+      "PerfumeId": 2,
+      "PerfumeSizeId": 11,
+      "PerfumeName": "Dior Sauvage",
+      "CategoryName": "Oriental",
+      "Gender": "Male",
+      "Size": "50ml",
+      "PredictedQuantity": 70,
+      "PredictedProfit": 17500.00
+    },
+    {
+      "PerfumeId": 2,
+      "PerfumeSizeId": 12,
+      "PerfumeName": "Dior Sauvage",
+      "CategoryName": "Oriental",
+      "Gender": "Male",
+      "Size": "100ml",
+      "PredictedQuantity": 70,
+      "PredictedProfit": 17500.00
+    },
+    {
+      "PerfumeId": 3,
+      "PerfumeSizeId": 17,
+      "PerfumeName": "Creed Aventus",
+      "CategoryName": "Oriental",
+      "Gender": "Male",
+      "Size": "50ml",
+      "PredictedQuantity": 70,
+      "PredictedProfit": 17500.00
+    },
+    {
+      "PerfumeId": 3,
+      "PerfumeSizeId": 18,
+      "PerfumeName": "Creed Aventus",
+      "CategoryName": "Oriental",
+      "Gender": "Male",
+      "Size": "100ml",
+      "PredictedQuantity": 70,
+      "PredictedProfit": 17500.00
+    },
+    {
+      "PerfumeId": 8,
+      "PerfumeSizeId": 47,
+      "PerfumeName": "Luna Rossa Carbon",
+      "CategoryName": "Oriental",
+      "Gender": "Male",
+      "Size": "50ml",
+      "PredictedQuantity": 70,
+      "PredictedProfit": 17500.00
+    },
+    {
+      "PerfumeId": 8,
+      "PerfumeSizeId": 48,
+      "PerfumeName": "Luna Rossa Carbon",
+      "CategoryName": "Oriental",
+      "Gender": "Male",
+      "Size": "100ml",
+      "PredictedQuantity": 70,
+      "PredictedProfit": 17500.00
+    }
+  ],
+  "Categories": [
+    {
+      "CategoryName": "Oriental",
+      "TotalUnits": 3190,
+      "TotalProfit": 417455.00
+    },
+    {
+      "CategoryName": "Aquatic",
+      "TotalUnits": 3169,
+      "TotalProfit": 412700.00
+    },
+    {
+      "CategoryName": "Woody",
+      "TotalUnits": 3139,
+      "TotalProfit": 407725.00
+    }
+  ],
+  "Genders": [
+    {
+      "Gender": "Male",
+      "TotalUnits": 3190,
+      "TotalProfit": 417455.00
+    },
+    {
+      "Gender": "Unisex",
+      "TotalUnits": 3169,
+      "TotalProfit": 412700.00
+    },
+    {
+      "Gender": "Female",
+      "TotalUnits": 3139,
+      "TotalProfit": 407725.00
+    }
+  ],
+  "Sizes": [
+    {
+      "Size": "50ml",
+      "TotalUnits": 1410,
+      "TotalProfit": 352500.00
+    },
+    {
+      "Size": "100ml",
+      "TotalUnits": 1385,
+      "TotalProfit": 346250.00
+    },
+    {
+      "Size": "30ml",
+      "TotalUnits": 1430,
+      "TotalProfit": 214500.00
+    },
+    {
+      "Size": "15ml",
+      "TotalUnits": 1752,
+      "TotalProfit": 148920.00
+    },
+    {
+      "Size": "10ml",
+      "TotalUnits": 1752,
+      "TotalProfit": 122640.00
+    },
+    {
+      "Size": "5ml",
+      "TotalUnits": 1769,
+      "TotalProfit": 53070.00
+    }
+  ]
+}

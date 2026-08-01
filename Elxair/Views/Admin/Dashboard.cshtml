@@ -1,12 +1,12 @@
 ﻿@{
     ViewData["Title"] = "Admin Dashboard";
 }
-
 <section class="elx-section">
     <div class="elx-eyebrow">Administration</div>
     <h2 class="elx-section-title" style="color:#2c1712;">Admin Dashboard</h2>
     <div class="row g-4">
-        <div class="col-md-6">
+
+        <div class="col-md-6 col-lg-4">
             <div class="elx-card">
                 <div class="elx-card-body">
                     <div class="elx-card-cat">Products</div>
@@ -17,7 +17,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6 col-lg-4">
             <div class="elx-card">
                 <div class="elx-card-body">
                     <div class="elx-card-cat">Orders</div>
@@ -27,8 +27,33 @@
                 </div>
             </div>
         </div>
+
+        @* Manage Promotions *@
+        <div class="col-md-6 col-lg-4">
+            <div class="elx-card">
+                <div class="elx-card-body">
+                    <div class="elx-card-cat">Marketing</div>
+                    <h4 class="elx-card-name">Manage Promotions</h4>
+                    <p style="color:#6b4a42;">Create discounts, flash sales and promotional campaigns.</p>
+                    <a class="btn-elx-outline" asp-controller="Promotion" asp-action="Index">View Promotions</a>
+                </div>
+            </div>
+        </div>
+
+        @* Store Insights *@
+        <div class="col-md-6 col-lg-4">
+            <div class="elx-card">
+                <div class="elx-card-body">
+                    <div class="elx-card-cat">Analytics</div>
+                    <h4 class="elx-card-name">Store Insights</h4>
+                    <p style="color:#6b4a42;">Sales breakdown, revenue charts, and top performers.</p>
+                    <a class="btn-elx-outline" asp-controller="Admin" asp-action="Insight">View Insights</a>
+                </div>
+            </div>
+        </div>
+
         @* Profit Predictions *@
-        <div class="col-md-6">
+        <div class="col-md-6 col-lg-4">
             <div class="elx-card">
                 <div class="elx-card-body">
                     <div class="elx-card-cat">Analytics</div>
@@ -39,17 +64,41 @@
             </div>
         </div>
 
-        @* Store Insights *@
-        <div class="col-md-6">
+        @* Business Analytics *@
+        <div class="col-md-6 col-lg-4">
             <div class="elx-card">
                 <div class="elx-card-body">
                     <div class="elx-card-cat">Analytics</div>
-                    <h4 class="elx-card-name">Store Insights</h4>
-                    <p style="color:#6b4a42;">Sales breakdown, revenue charts, and top performers.</p>
-                    <a class="btn-elx-outline" asp-controller="Admin" asp-action="Insight">View Insights</a>
+                    <h4 class="elx-card-name">Business Analytics</h4>
+                    <p style="color:#6b4a42;">Dashboard for business analytics.</p>
+                    <a class="btn-elx-outline" asp-controller="Admin" asp-action="BusinessAnalytics">View Business Analytics</a>
                 </div>
             </div>
         </div>
+
+        @* Store Reports *@
+        <div class="col-md-6 col-lg-4">
+            <div class="elx-card">
+                <div class="elx-card-body">
+                    <div class="elx-card-cat">Report</div>
+                    <h4 class="elx-card-name">Store Reports</h4>
+                    <p style="color:#6b4a42;">Reports about business status.</p>
+                    <a class="btn-elx-outline" asp-controller="Admin" asp-action="ReportsHistory">View Reports</a>
+                </div>
+            </div>
         </div>
+
+        @* Chatbot *@
+        <div class="col-md-6 col-lg-4">
+            <div class="elx-card">
+                <div class="elx-card-body">
+                    <div class="elx-card-cat">Chatbot</div>
+                    <h4 class="elx-card-name">Elixir Chatbot</h4>
+                    <p style="color:#6b4a42;">Talk With Ai Agent About Business.</p>
+                    <a class="btn-elx-outline" asp-action="Chatbot" asp-controller="Admin">Talk With Elixir Chatbot</a>
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>

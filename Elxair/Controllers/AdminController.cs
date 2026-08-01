@@ -1,4 +1,6 @@
-﻿using Elxair.Models;
+﻿using Elixir.Services;
+using Elxair.Models;
+using Elxair.Models.AI;
 using Elxair.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,66 +13,209 @@ namespace Elxair.Controllers
         private readonly AdminService adminService;
         private readonly PaymentService paymentService;
         private readonly ElxairContext _context;
+        private readonly BusinessAnalyticsService businessAnalyticsService;
+        private readonly ReportService reportService;
+        private readonly JsonReportService _jsonReportService;
+        private readonly IWebHostEnvironment _environment;
         private readonly AiService _aiService;
+        private readonly RagService ragService;
 
-        public AdminController(AdminService adminService, PaymentService paymentService, ElxairContext context, AiService aiService)
+        public AdminController(
+            AdminService adminService,
+            PaymentService paymentService,
+            ElxairContext context,
+            AiService aiService,
+            BusinessAnalyticsService businessAnalyticsService,
+            RagService ragService,
+            ReportService reportService,
+            JsonReportService jsonReportService,
+            IWebHostEnvironment environment)
         {
             this.adminService = adminService;
             this.paymentService = paymentService;
             this._context = context;
             this._aiService = aiService;
+            this.businessAnalyticsService = businessAnalyticsService;
+            this.ragService = ragService;
+            this.reportService = reportService;
+
+            _jsonReportService = jsonReportService;
+
+            _environment = environment;
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> ProfitDashboard()
         {
-            // Get All Perfumes
+            var results = await _aiService.PredictAllPerfumes(
+                DateTime.Now.Month,
+                DateTime.Now.Year);
 
-            var perfumes = _context.Perfumes
-                .Include(p => p.Category)
-                .Include(p => p.Sizes)
-                .ToList();
-
-            var chartData = new List<object>();
-
-            foreach (var perfume in perfumes)
-            {
-                // Calc Demand For EveryOne
-
-                int totalDemand = _context.OrderItems
-                    .Where(oi => oi.PerfumeSize.PerfumeId == perfume.Id)
-                    .Sum(oi => (int?)oi.Quantity) ?? 0;
-
-                // Prepare Data For Ai Model
-
-                var requestData = new PredictionRequest
-                {
-                    Gender = perfume.Gender,
-                    Category = perfume.Category?.Name ?? "General",
-                    Size = perfume.Sizes.FirstOrDefault()?.Size ?? "100ml",
-                    UnitPrice = (float)(perfume.Sizes.FirstOrDefault()?.Price ?? 0),
-                    PerfumeDemand = totalDemand,
-                    SoldInSeason = "Winter"
-                };
-
-                // Call AI
-
-                decimal profit = await _aiService.GetPredictionAsync(requestData);
-                chartData.Add(new { Name = perfume.Name, Profit = profit });
-            }
-            return View(chartData);
+            return View(results
+                .OrderByDescending(x => x.PredictedProfit)
+                .ToList());
         }
 
-        public IActionResult Insight()
+        public async Task<IActionResult> BusinessAnalytics()
         {
-            // Perpare Category For Compression
+            var predictions = await _aiService.PredictAllPerfumes(
+                DateTime.Now.Month,
+                DateTime.Now.Year
+                );
+
+            var report = businessAnalyticsService.Analyze(predictions);
+
+            return View(report);
+        }
+
+        public async Task<IActionResult> GenerateReport()
+        {
+            var predictions = await _aiService.PredictAllPerfumes(
+                DateTime.Now.Month,
+                DateTime.Now.Year);
+
+            var report = businessAnalyticsService.Analyze(predictions);
+
+            report.ReportMonth = DateTime.Now.Month;
+            report.ReportYear = DateTime.Now.Year;
+
+            string pdfPath =
+                await reportService.SavePdfAsync(
+                    report,
+                    _environment);
+
+            string jsonPath =
+                await _jsonReportService.SaveJsonAsync(
+                    report,
+                    _environment);
+
+            var reportEntity = new Report
+            {
+                ReportMonth = report.ReportMonth,
+                ReportYear = report.ReportYear,
+                GeneratedAt = DateTime.Now,
+
+                TotalPredictedProfit = report.TotalPredictedProfit,
+                TotalPredictedUnits = report.TotalPredictedUnits,
+
+                PdfPath = pdfPath,
+                JsonPath = jsonPath,
+
+                GeneratedBy = "Admin",
+                Status = "Completed"
+            };
+
+            _context.Reports.Add(reportEntity);
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Report generated successfully.";
+
+            return RedirectToAction(nameof(BusinessAnalytics));
+        }
+
+        public IActionResult ReportsHistory()
+        {
+            var reports = _context.Reports
+                .OrderByDescending(r => r.GeneratedAt)
+                .ToList();
+
+            return View(reports);
+        }
+
+        public IActionResult DownloadPdf(int id)
+        {
+            var report = _context.Reports.Find(id);
+
+            if (report == null)
+                return NotFound();
+
+            string filePath = Path.Combine(
+                _environment.WebRootPath,
+                report.PdfPath);
+
+            return PhysicalFile(
+                filePath,
+                "application/pdf",
+                Path.GetFileName(filePath));
+        }
+
+        public IActionResult DownloadJson(int id)
+        {
+            var report = _context.Reports.Find(id);
+
+            if (report == null)
+                return NotFound();
+
+            string filePath = Path.Combine(
+                _environment.WebRootPath,
+                report.JsonPath);
+
+            return PhysicalFile(
+                filePath,
+                "application/json",
+                Path.GetFileName(filePath));
+        }
+
+        public async Task<IActionResult> DeleteReport(int id)
+        {
+            var report = await _context.Reports.FindAsync(id);
+
+            if (report == null)
+                return NotFound();
+
+            string pdf = Path.Combine(
+                _environment.WebRootPath,
+                report.PdfPath);
+
+            string json = Path.Combine(
+                _environment.WebRootPath,
+                report.JsonPath);
+
+            if (System.IO.File.Exists(pdf))
+                System.IO.File.Delete(pdf);
+
+            if (System.IO.File.Exists(json))
+                System.IO.File.Delete(json);
+
+            _context.Reports.Remove(report);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(ReportsHistory));
+        }
+
+
+        public IActionResult Chatbot()
+        {
+            return View();
+        }
+
+
+       [HttpPost]
+    public async Task<IActionResult> AskAI([FromBody] ChatRequest request)
+    {
+        var answer = await ragService.AskAsync(request.Message);
+
+        return Json(new
+        {
+            answer
+        });
+    }
+
+
+    public IActionResult Insight()
+        {
+            // Prepare category data for the comparison chart
 
             var catrgoryData = _context.OrderItems
                 .GroupBy(oi => oi.PerfumeSize.Perfume.Category.Name)
                 .Select(g => new { Name = g.Key, count = g.Sum(oi => oi.Quantity) })
                 .ToList();
 
-            // Perpare Perfumes For Compression
+            // Prepare perfume data for the comparison chart
 
             var perfumeData = _context.OrderItems
                 .GroupBy(oi => oi.PerfumeSize.Perfume.Name)
@@ -83,7 +228,7 @@ namespace Elxair.Controllers
                 .OrderByDescending(p => p.SalesCount)
                 .ToList();
 
-            // Monthly Data
+            // Monthly data
 
             var viewModel = new AdminDashboard
             {
@@ -266,7 +411,7 @@ namespace Elxair.Controllers
 
             if (order == null) return NotFound();
 
-            // Payment Detalis
+            // Payment details
             var payment = _context.Payments
                 .FirstOrDefault(p => p.OrderId == id);
 

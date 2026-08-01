@@ -132,6 +132,9 @@ namespace Elxair.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<bool>("SoldInSeason")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
@@ -226,6 +229,9 @@ namespace Elxair.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Season")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
@@ -240,6 +246,9 @@ namespace Elxair.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("CostPerBottle")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("PerfumeId")
                         .HasColumnType("int");
@@ -259,6 +268,150 @@ namespace Elxair.Migrations
                     b.HasIndex("PerfumeId");
 
                     b.ToTable("PerfumeSizes");
+                });
+
+            modelBuilder.Entity("Elxair.Models.Promotion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("PromotionType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Promotions");
+                });
+
+            modelBuilder.Entity("Elxair.Models.PromotionPerfumeSize", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PerfumeSizeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PromotionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PerfumeSizeId");
+
+                    b.HasIndex("PromotionId", "PerfumeSizeId")
+                        .IsUnique();
+
+                    b.ToTable("PromotionPerfumeSizes");
+                });
+
+            modelBuilder.Entity("Elxair.Models.Report", b =>
+                {
+                    b.Property<int>("ReportId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReportId"));
+
+                    b.Property<DateTime>("GeneratedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GeneratedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JsonPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PdfPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReportMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReportYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalPredictedProfit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TotalPredictedUnits")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReportId");
+
+                    b.ToTable("Reports");
+                });
+
+            modelBuilder.Entity("Elxair.Models.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PerfumeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PerfumeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Elxair.Models.User", b =>
@@ -413,6 +566,44 @@ namespace Elxair.Migrations
                     b.Navigation("Perfume");
                 });
 
+            modelBuilder.Entity("Elxair.Models.PromotionPerfumeSize", b =>
+                {
+                    b.HasOne("Elxair.Models.PerfumeSize", "PerfumeSize")
+                        .WithMany("PromotionPerfumeSizes")
+                        .HasForeignKey("PerfumeSizeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Elxair.Models.Promotion", "Promotion")
+                        .WithMany("PromotionPerfumeSizes")
+                        .HasForeignKey("PromotionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PerfumeSize");
+
+                    b.Navigation("Promotion");
+                });
+
+            modelBuilder.Entity("Elxair.Models.Review", b =>
+                {
+                    b.HasOne("Elxair.Models.Perfume", "Perfume")
+                        .WithMany("Reviews")
+                        .HasForeignKey("PerfumeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Elxair.Models.User", "User")
+                        .WithMany("Reviews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Perfume");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Favorite", b =>
                 {
                     b.HasOne("Elxair.Models.Perfume", "Perfume")
@@ -443,7 +634,19 @@ namespace Elxair.Migrations
 
             modelBuilder.Entity("Elxair.Models.Perfume", b =>
                 {
+                    b.Navigation("Reviews");
+
                     b.Navigation("Sizes");
+                });
+
+            modelBuilder.Entity("Elxair.Models.PerfumeSize", b =>
+                {
+                    b.Navigation("PromotionPerfumeSizes");
+                });
+
+            modelBuilder.Entity("Elxair.Models.Promotion", b =>
+                {
+                    b.Navigation("PromotionPerfumeSizes");
                 });
 
             modelBuilder.Entity("Elxair.Models.User", b =>
@@ -453,6 +656,8 @@ namespace Elxair.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("Payments");
+
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

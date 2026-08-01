@@ -1,0 +1,582 @@
+﻿@{
+    ViewData["Title"] = "Elixir Assistant";
+    Layout = "_Layout";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --ec-bg: #FBF7F1;
+        --ec-card: #FFFFFF;
+        --ec-border: #EAE0D2;
+        --ec-text: #2E2118;
+        --ec-text-soft: #5B4E42;
+        --ec-muted: #9C8C79;
+        --ec-gold: #B8935B;
+        --ec-gold-dark: #8F6F40;
+        --ec-gold-bg: #F6EEE1;
+        --ec-rose: #C77B82;
+        --ec-rose-bg: #FBEEEF;
+        --ec-shadow: 0 4px 24px rgba(46,33,24,0.06);
+        --ec-radius: 16px;
+    }
+
+    .ec-wrap {
+        background: var(--ec-bg);
+        color: var(--ec-text);
+        font-family: 'Poppins',sans-serif;
+        padding: 48px 0 70px;
+        min-height: 100%;
+    }
+
+        .ec-wrap .container-xl {
+            max-width: 900px;
+        }
+
+    .ec-breadcrumb {
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--ec-muted);
+        margin-bottom: 18px;
+    }
+
+        .ec-breadcrumb a {
+            color: var(--ec-muted);
+            text-decoration: none;
+        }
+
+            .ec-breadcrumb a:hover {
+                color: var(--ec-gold-dark);
+            }
+
+        .ec-breadcrumb .sep {
+            margin: 0 8px;
+            opacity: .5;
+        }
+
+        .ec-breadcrumb .current {
+            color: var(--ec-text-soft);
+        }
+
+    .ec-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .ec-eyebrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 11px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--ec-gold-dark);
+        margin-bottom: 10px;
+    }
+
+        .ec-eyebrow .dash {
+            width: 22px;
+            height: 1px;
+            background: var(--ec-gold);
+        }
+
+    .ec-title {
+        font-family: 'Playfair Display',serif;
+        font-weight: 600;
+        font-size: 2.4rem;
+        margin: 0 0 8px;
+    }
+
+    .ec-subtitle {
+        color: var(--ec-muted);
+        font-size: 14px;
+        margin: 0;
+    }
+
+    /* Chat shell */
+    .ec-chat {
+        background: var(--ec-card);
+        border: 1px solid var(--ec-border);
+        border-radius: var(--ec-radius);
+        box-shadow: var(--ec-shadow);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        height: min(640px, 72vh);
+    }
+
+    .ec-chat-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 22px;
+        border-bottom: 1px solid var(--ec-border);
+        background: linear-gradient(180deg,#FFFDFA,#FCFAF6);
+    }
+
+    .ec-chat-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--ec-gold-bg);
+        color: var(--ec-gold-dark);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+        .ec-chat-avatar svg {
+            width: 19px;
+            height: 19px;
+        }
+
+    .ec-chat-name {
+        font-family: 'Playfair Display',serif;
+        font-weight: 600;
+        font-size: 1rem;
+        line-height: 1.1;
+    }
+
+    .ec-chat-status {
+        font-size: 11.5px;
+        color: var(--ec-muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 2px;
+    }
+
+    .ec-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #7C9583;
+        display: inline-block;
+    }
+
+    .ec-chat-clear {
+        margin-left: auto;
+        font-size: 11px;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+        color: var(--ec-muted);
+        background: none;
+        border: 1px solid var(--ec-border);
+        padding: 7px 13px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+        .ec-chat-clear:hover {
+            border-color: var(--ec-rose);
+            color: var(--ec-rose);
+            background: var(--ec-rose-bg);
+        }
+
+    .ec-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        scroll-behavior: smooth;
+    }
+
+        .ec-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .ec-messages::-webkit-scrollbar-thumb {
+            background: var(--ec-border);
+            border-radius: 10px;
+        }
+
+    .ec-row {
+        display: flex;
+        gap: 10px;
+        max-width: 82%;
+    }
+
+        .ec-row.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+            max-width: 78%;
+        }
+
+        .ec-row .ec-avatar-sm {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ec-row.bot .ec-avatar-sm {
+            background: var(--ec-gold-bg);
+            color: var(--ec-gold-dark);
+        }
+
+        .ec-row.user .ec-avatar-sm {
+            background: #EFE7DC;
+            color: var(--ec-text-soft);
+        }
+
+        .ec-row .ec-avatar-sm svg {
+            width: 14px;
+            height: 14px;
+        }
+
+    .ec-bubble {
+        padding: 12px 16px;
+        border-radius: 14px;
+        font-size: 13.8px;
+        line-height: 1.55;
+        color: var(--ec-text-soft);
+    }
+
+    .ec-row.bot .ec-bubble {
+        background: #FCFAF6;
+        border: 1px solid var(--ec-border);
+        border-top-left-radius: 4px;
+    }
+
+    .ec-row.user .ec-bubble {
+        background: var(--ec-text);
+        color: #F6EEE1;
+        border-top-right-radius: 4px;
+    }
+
+    .ec-time {
+        font-size: 10px;
+        color: var(--ec-muted);
+        margin-top: 5px;
+    }
+
+    .ec-row.user .ec-time {
+        text-align: right;
+    }
+
+    .ec-typing {
+        display: flex;
+        gap: 4px;
+        padding: 4px 2px;
+    }
+
+        .ec-typing span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--ec-gold);
+            opacity: .5;
+            animation: ecBlink 1.2s infinite ease-in-out;
+        }
+
+            .ec-typing span:nth-child(2) {
+                animation-delay: .2s;
+            }
+
+            .ec-typing span:nth-child(3) {
+                animation-delay: .4s;
+            }
+
+    @@keyframes ecBlink {
+        0%, 80%, 100% {
+            opacity: .35;
+            transform: translateY(0);
+        }
+
+        40% {
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+    }
+
+    .ec-suggestions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding: 0 22px 16px;
+    }
+
+    .ec-chip {
+        font-size: 12px;
+        padding: 7px 14px;
+        border-radius: 20px;
+        border: 1px solid var(--ec-border);
+        background: #FCFAF6;
+        color: var(--ec-text-soft);
+        cursor: pointer;
+        transition: all .2s ease;
+        white-space: nowrap;
+    }
+
+        .ec-chip:hover {
+            border-color: var(--ec-gold);
+            color: var(--ec-gold-dark);
+            background: var(--ec-gold-bg);
+        }
+
+    .ec-input-bar {
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        padding: 16px 20px;
+        border-top: 1px solid var(--ec-border);
+        background: #FFFDFA;
+    }
+
+        .ec-input-bar textarea {
+            flex: 1;
+            resize: none;
+            border: 1px solid var(--ec-border);
+            border-radius: 12px;
+            padding: 11px 14px;
+            font-family: 'Poppins',sans-serif;
+            font-size: 13.5px;
+            color: var(--ec-text);
+            background: var(--ec-card);
+            max-height: 110px;
+            outline: none;
+            transition: border-color .2s ease;
+        }
+
+            .ec-input-bar textarea:focus {
+                border-color: var(--ec-gold);
+            }
+
+    .ec-send {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        border: none;
+        flex-shrink: 0;
+        background: var(--ec-text);
+        color: #F6EEE1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform .15s ease, background .2s ease;
+    }
+
+        .ec-send:hover {
+            background: var(--ec-gold-dark);
+        }
+
+        .ec-send:active {
+            transform: scale(.94);
+        }
+
+        .ec-send:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .ec-send svg {
+            width: 17px;
+            height: 17px;
+        }
+
+    .ec-footnote {
+        text-align: center;
+        font-size: 11px;
+        color: var(--ec-muted);
+        margin-top: 14px;
+        letter-spacing: .3px;
+    }
+
+    @@media (max-width:576px) {
+        .ec-title {
+            font-size: 1.9rem;
+        }
+
+        .ec-chat {
+            height: 78vh;
+            border-radius: 12px;
+        }
+    }
+</style>
+
+<div class="ec-wrap">
+    <div class="container-xl">
+
+        <div class="ec-breadcrumb">
+            <a href="/">Home</a><span class="sep">/</span>
+            <span class="current">Elixir Assistant</span>
+        </div>
+
+        <div class="ec-header">
+            <div class="ec-eyebrow"><span class="dash"></span> AI Concierge <span class="dash"></span></div>
+            <h1 class="ec-title">Elixir Assistant</h1>
+            <p class="ec-subtitle">Ask about fragrances, notes, sizes, or your order — anytime.</p>
+        </div>
+
+        <div class="ec-chat">
+            <div class="ec-chat-head">
+                <div class="ec-chat-avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2c-1 3-3 4-3 7a3 3 0 0 0 6 0c0-3-2-4-3-7Z" /><path d="M7 13a5 5 0 0 0 10 0" /><path d="M12 18v4M9 22h6" /></svg>
+                </div>
+                <div>
+                    <div class="ec-chat-name">Elixir Assistant</div>
+                    <div class="ec-chat-status"><span class="ec-dot"></span> Online now</div>
+                </div>
+                <button type="button" class="ec-chat-clear" id="ecClear">Clear chat</button>
+            </div>
+
+            <div class="ec-messages" id="ecMessages">
+                <div class="ec-row bot">
+                    <div class="ec-avatar-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2c-1 3-3 4-3 7a3 3 0 0 0 6 0c0-3-2-4-3-7Z" /><path d="M7 13a5 5 0 0 0 10 0" /></svg></div>
+                    <div>
+                        <div class="ec-bubble">Welcome to Elixir. I can help you find a fragrance, check sizes and prices, or track an order. What are you looking for today?</div>
+                        <div class="ec-time" id="ecInitialTime"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ec-suggestions" id="ecSuggestions">
+                <button type="button" class="ec-chip">Recommend a fragrance for evenings</button>
+                <button type="button" class="ec-chip">What sizes are available?</button>
+                <button type="button" class="ec-chip">Track my order</button>
+            </div>
+
+            <div class="ec-input-bar">
+                <textarea id="ecInput" rows="1" placeholder="Type your message…"></textarea>
+                <button type="button" class="ec-send" id="ecSend" aria-label="Send">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg>
+                </button>
+            </div>
+        </div>
+
+        <p class="ec-footnote">Elixir Assistant can make mistakes. For urgent order issues, contact support directly.</p>
+    </div>
+</div>
+
+<script>
+    (function () {
+        // POST { message: string }  ->  200 { answer: string }
+        var CHAT_ENDPOINT = '@Url.Action("AskAI")';
+
+        var messagesEl = document.getElementById('ecMessages');
+        var inputEl = document.getElementById('ecInput');
+        var sendBtn = document.getElementById('ecSend');
+        var clearBtn = document.getElementById('ecClear');
+        var suggestionsEl = document.getElementById('ecSuggestions');
+
+        document.getElementById('ecInitialTime').textContent = formatTime(new Date());
+
+        function formatTime(d) {
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function scrollToBottom() {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        function addMessage(text, sender) {
+            var row = document.createElement('div');
+            row.className = 'ec-row ' + sender;
+
+            var avatar = document.createElement('div');
+            avatar.className = 'ec-avatar-sm';
+            avatar.innerHTML = sender === 'bot'
+                ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2c-1 3-3 4-3 7a3 3 0 0 0 6 0c0-3-2-4-3-7Z"/><path d="M7 13a5 5 0 0 0 10 0"/></svg>'
+                : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>';
+
+            var col = document.createElement('div');
+            var bubble = document.createElement('div');
+            bubble.className = 'ec-bubble';
+            bubble.textContent = text;
+            var time = document.createElement('div');
+            time.className = 'ec-time';
+            time.textContent = formatTime(new Date());
+
+            col.appendChild(bubble);
+            col.appendChild(time);
+            row.appendChild(avatar);
+            row.appendChild(col);
+            messagesEl.appendChild(row);
+            scrollToBottom();
+            return row;
+        }
+
+        function addTyping() {
+            var row = document.createElement('div');
+            row.className = 'ec-row bot';
+            row.id = 'ecTypingRow';
+            row.innerHTML =
+                '<div class="ec-avatar-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2c-1 3-3 4-3 7a3 3 0 0 0 6 0c0-3-2-4-3-7Z"/><path d="M7 13a5 5 0 0 0 10 0"/></svg></div>' +
+                '<div class="ec-bubble"><div class="ec-typing"><span></span><span></span><span></span></div></div>';
+            messagesEl.appendChild(row);
+            scrollToBottom();
+        }
+
+        function removeTyping() {
+            var row = document.getElementById('ecTypingRow');
+            if (row) row.remove();
+        }
+
+        async function sendMessage(text) {
+            text = (text || '').trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            inputEl.value = '';
+            autoGrow();
+            suggestionsEl.style.display = 'none';
+            sendBtn.disabled = true;
+            addTyping();
+
+            try {
+                var res = await fetch(CHAT_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+
+                if (!res.ok) throw new Error('Request failed: ' + res.status);
+                var data = await res.json();
+                removeTyping();
+                addMessage(data.answer || "Sorry, I couldn't process that just now.", 'bot');
+            } catch (err) {
+                removeTyping();
+                addMessage("I'm having trouble connecting right now. Please try again in a moment.", 'bot');
+                console.error('Chatbot error:', err);
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+
+        function autoGrow() {
+            inputEl.style.height = 'auto';
+            inputEl.style.height = Math.min(inputEl.scrollHeight, 110) + 'px';
+        }
+
+        sendBtn.addEventListener('click', function () { sendMessage(inputEl.value); });
+        inputEl.addEventListener('input', autoGrow);
+        inputEl.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage(inputEl.value);
+            }
+        });
+
+        suggestionsEl.querySelectorAll('.ec-chip').forEach(function (chip) {
+            chip.addEventListener('click', function () { sendMessage(chip.textContent); });
+        });
+
+        clearBtn.addEventListener('click', function () {
+            messagesEl.innerHTML = '';
+            addMessage('Welcome back. What can I help you find today?', 'bot');
+            suggestionsEl.style.display = 'flex';
+        });
+    })();
+</script>

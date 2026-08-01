@@ -6,21 +6,50 @@
 }
 
 <div class="elx-card position-relative">
+
+    <!-- Favorite -->
     <button class="btn fav-btn"
             onclick="toggleFavorite(@Model.Id, this)"
-            style="position: absolute; top: 15px; right: 15px;
-                   background: rgba(255, 255, 255, 0.9);
-                   border-radius: 50%; width: 40px; height: 40px;
-                   border: none; z-index: 10; display: flex;
-                   align-items: center; justify-content: center;
-                   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-                   transition: transform 0.2s;">
-        <i class="fa-solid fa-heart fa-lg" style="color: #e74c3c;"></i>
+            style="position:absolute;top:15px;right:15px;
+                   background:rgba(255,255,255,.9);
+                   border-radius:50%;width:40px;height:40px;
+                   border:none;z-index:10;display:flex;
+                   align-items:center;justify-content:center;
+                   box-shadow:0 4px 10px rgba(0,0,0,.1);
+                   transition:transform .2s;">
+        <i class="fa-solid fa-heart fa-lg" style="color:#e74c3c;"></i>
     </button>
 
-    <img src="~/images/perfumes/@Model.ImageUrl" alt="@Model.Name" class="elx-card-img" />
+    <!-- Season Badge -->
+    <div style="position:absolute;top:15px;left:15px;z-index:10;">
+        @switch (Model.Season)
+        {
+            case PerfumeSeason.Summer:
+                <span class="badge rounded-pill bg-warning text-dark">
+                    ☀ Summer
+                </span>
+                break;
+
+            case PerfumeSeason.Winter:
+                <span class="badge rounded-pill bg-primary">
+                    ❄ Winter
+                </span>
+                break;
+
+            case PerfumeSeason.AllSeasons:
+                <span class="badge rounded-pill bg-success">
+                    🌤 All Seasons
+                </span>
+                break;
+        }
+    </div>
+
+    <img src="~/images/perfumes/@Model.ImageUrl"
+         alt="@Model.Name"
+         class="elx-card-img" />
 
     <div class="elx-card-body">
+
         <div class="elx-card-cat">
             @(Model.Category != null ? Model.Category.Name : "Perfume")
         </div>
@@ -39,8 +68,11 @@
 
         <div class="elx-card-price">
             <span>@Model.Brand</span>
+
             <strong>
-                @(firstSize != null ? $"{Math.Round(firstSize.Price)} EGP" : "Price N/A")
+                @(firstSize != null
+                    ? $"{Math.Round(firstSize.Price)} EGP"
+                    : "Price N/A")
             </strong>
         </div>
 
@@ -52,5 +84,6 @@
                 View Details
             </a>
         </div>
+
     </div>
 </div>

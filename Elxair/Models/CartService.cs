@@ -5,33 +5,48 @@ namespace Elxair.Models
     public class CartService
     {
         private readonly ElxairContext db;
+        private readonly UserService us;
 
-        public CartService(ElxairContext db)
+        public CartService(ElxairContext db, UserService us)
         {
             this.db = db;
+            this.us = us;
         }
 
-        public void AddToCart(int userId, int perfumeSizeId, int quantity)
+        public void AddToCart(int perfumeSizeId, int quantity)
         {
+            int userId = us.GetCurrentUserId();
+
             var perfumeSize = db.PerfumeSizes.Find(perfumeSizeId);
 
-            if (perfumeSize == null || perfumeSize.Stock < quantity)
+            if (perfumeSize == null)
+                throw new Exception("Perfume size not found.");
+
+            if (perfumeSize.Stock < quantity)
                 throw new Exception("Sorry, out of stock!");
 
-            var cart = db.Carts.Include(c => c.Items)
-                               .FirstOrDefault(c => c.UserId == userId);
+            var cart = db.Carts
+                .Include(c => c.Items)
+                .FirstOrDefault(c => c.UserId == userId);
 
             if (cart == null)
             {
-                cart = new Cart { UserId = userId, Items = new List<CartItem>() };
+                cart = new Cart
+                {
+                    UserId = userId,
+                    Items = new List<CartItem>()
+                };
+
                 db.Carts.Add(cart);
                 db.SaveChanges();
             }
 
-            var existing = cart.Items.FirstOrDefault(i => i.PerfumeSizeId == perfumeSizeId);
-            if (existing != null)
+            var existingItem = cart.Items
+                .FirstOrDefault(i => i.PerfumeSizeId == perfumeSizeId);
+
+            if (existingItem != null)
             {
-                existing.Quantity += quantity;
+                existingItem.Quantity += quantity;
             }
             else
             {
@@ -43,28 +58,49 @@ namespace Elxair.Models
                 });
             }
 
-            //perfumeSize.Stock -= quantity;
             db.SaveChanges();
         }
 
-        public void RemoveFromCart(int itemId)
+        public List<CartItem> GetUserCart()
         {
-            var item = db.CartItems.Find(itemId);
-            if (item != null)
-            {
-                db.CartItems.Remove(item);
-                db.SaveChanges();
-            }
-        }
+            int userId = us.GetCurrentUserId();
 
-        public List<CartItem> GetUserCart(int userId)
-        {
             return db.Carts
                 .Where(c => c.UserId == userId)
                 .SelectMany(c => c.Items)
                 .Include(i => i.PerfumeSize)
-                .ThenInclude(p => p.Perfume)
+                .ThenInclude(ps => ps.Perfume)
                 .ToList();
+        }
+
+        public void RemoveFromCart(int itemId)
+        {
+            int userId = us.GetCurrentUserId();
+
+            var item = db.CartItems
+                .Include(i => i.Cart)
+                .FirstOrDefault(i => i.Id == itemId && i.Cart.UserId == userId);
+
+            if (item == null)
+                throw new Exception("Cart item not found.");
+
+            db.CartItems.Remove(item);
+            db.SaveChanges();
+        }
+
+        public void ClearCart(int userId)
+        {
+            var cart = db.Carts
+                .Include(c => c.Items)
+                .FirstOrDefault(c => c.UserId == userId);
+
+            if (cart == null)
+                return;
+
+            db.CartItems.RemoveRange(cart.Items);
+            db.Carts.Remove(cart);
+
+            db.SaveChanges();
         }
     }
 }

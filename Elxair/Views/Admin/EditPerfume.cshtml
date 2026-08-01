@@ -44,6 +44,16 @@
                                 <option value="Unisex">Unisex</option>
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <label asp-for="Season" class="form-label"></label>
+
+                            <select asp-for="Season"
+                                    asp-items="Html.GetEnumSelectList<PerfumeSeason>()"
+                                    class="form-select">
+                            </select>
+
+                            <span asp-validation-for="Season" class="text-danger"></span>
+                        </div>
 
                         <div class="mb-4">
                             <label asp-for="CategoryId" class="elx-label"></label>

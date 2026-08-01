@@ -1,13 +1,14 @@
+using Elixir.Services;
 using Elxair.Models;
 using Elxair.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. HttpContext
 builder.Services.AddHttpContextAccessor();
 
-// 2. Session
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -15,56 +16,77 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// 3. Database
 builder.Services.AddDbContext<ElxairContext>(options =>
     options.UseSqlServer("Server=.;Database=Elxair;Trusted_Connection=True;TrustServerCertificate=True;"));
 
-// 4. Services (DI)
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<OrderService>();
-
 builder.Services.AddScoped<PaymentService>();
-
-//AiService
 builder.Services.AddScoped<AiService>();
-
-// 5. MVC
+builder.Services.AddScoped<ReviewService>();
+builder.Services.AddScoped<IPromotionService, PromotionService>();
+builder.Services.AddScoped<BusinessAnalyticsService>();
+builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<JsonReportService>();
+builder.Services.AddScoped<RagService>();
 builder.Services.AddControllersWithViews();
-builder.Services.AddHttpClient();// call api
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
-// 6. Middleware
 app.UseStaticFiles();
-
 app.UseRouting();
 
-app.UseSession(); // لازم بعد UseRouting وقبل Authorization
+app.UseSession();
+
+app.UseMiddleware<Elxair.Middleware.GuestMiddleware>();
 
 app.UseAuthorization();
 
-// 7. Routing
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// شغّل الـ Python API في الخلفية
-var pythonProcess = new System.Diagnostics.Process
+var pythonProcess = new Process
 {
-    StartInfo = new System.Diagnostics.ProcessStartInfo
+    StartInfo = new ProcessStartInfo
     {
-        FileName = @"D:\Fci 2025-2026\Software Development\Elxair_Project\Elxair\API\FastMl\Scripts\uvicorn.exe",
-        Arguments = "Api:app --reload",
-        WorkingDirectory = @"D:\Fci 2025-2026\Software Development\Elxair_Project\Elxair\API",
+        FileName = @"D:\Fci 2025-2026\Software Development\Elxair_Project\Elxair\Model\FastMl\Scripts\python.exe",
+
+        Arguments = "-m uvicorn app:app --host 127.0.0.1 --port 8000",
+
+        WorkingDirectory = @"D:\Fci 2025-2026\Software Development\Elxair_Project\Elxair\Model",
+
         UseShellExecute = false,
         CreateNoWindow = true,
+        RedirectStandardOutput = true,
+        RedirectStandardError = true
     }
 };
-pythonProcess.Start();
 
-app.Run();
+pythonProcess.OutputDataReceived += (s, e) =>
+{
+    if (!string.IsNullOrWhiteSpace(e.Data))
+        Console.WriteLine(e.Data);
+};
+
+pythonProcess.ErrorDataReceived += (s, e) =>
+{
+    if (!string.IsNullOrWhiteSpace(e.Data))
+        Console.WriteLine(e.Data);
+};
+
+pythonProcess.Start();
+pythonProcess.BeginOutputReadLine();
+pythonProcess.BeginErrorReadLine();
+
+// Give FastAPI time to start
+await Task.Delay(3000);
+
+
 
 app.Run();

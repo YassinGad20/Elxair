@@ -1,98 +1,593 @@
-﻿@model IEnumerable<dynamic>
+﻿@model List<DashboardPredictionResult>
+@using Elxair.Models
 @{
-    ViewData["Title"] = "Elixir Analytics";
-    var exchangeRate = 50m;
+    Layout = null;
+
+    var items = Model ?? new List<DashboardPredictionResult>();
+    var groups = items
+        .GroupBy(i => new { i.PerfumeId, i.PerfumeName, i.CategoryName, i.Gender })
+        .OrderByDescending(g => g.Sum(i => i.PredictedProfit))
+        .ToList();
+
+    decimal totalPredictedProfit = items.Sum(i => i.PredictedProfit);
+    int totalUnitsSold = items.Sum(i => i.PredictedQuantity);
+    DashboardPredictionResult? topPerformer = items.OrderByDescending(i => i.PredictedProfit).FirstOrDefault();
+    DashboardPredictionResult? weakestPerformer = items.OrderBy(i => i.PredictedProfit).FirstOrDefault();
+    int maxQty = items.Any() ? items.Max(i => i.PredictedQuantity) : 1;
+    if (maxQty <= 0) maxQty = 1;
 }
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Elxair · Profit Forecast Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .elx-dash {
+            --ink: #2B2013;
+            --bg: #FBF5E9;
+            --panel: #FFFDF8;
+            --panel-soft: #F5EBD8;
+            --line: rgba(151,110,42,0.22);
+            --gold: #A97C2F;
+            --gold-deep: #8A611F;
+            --gold-soft: #C79A4B;
+            --wine: #8A3552;
+            --wine-light: #A85A72;
+            --flat: #9A8F78;
+            --text: #2B2013;
+            --text-dim: #7C6E56;
+            --radius: 14px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding: 48px 6vw 80px;
+            box-sizing: border-box;
+        }
 
-<style>
-    /* تحسين شكل الحاوية لتكون أكبر وأوضح */
-    .chart-container {
-        width: 90%;
-        margin: 40px auto 80px auto; /* مسافة كبيرة من الأسفل عن الـ Footer */
-        background-color: #fdfaf8; /* لون كريمي هادي جداً */
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    }
+            .elx-dash * {
+                box-sizing: border-box;
+            }
 
-    .chart-header {
-        font-family: 'Playfair Display', serif;
-        color: #4a3728;
-        text-align: center;
-        margin-bottom: 30px;
-        letter-spacing: 1px;
-    }
-</style>
+        .elx-hero {
+            text-align: center;
+            margin-bottom: 44px;
+        }
 
-<div class="chart-container">
-    <h2 class="chart-header">Monthly Profit Projections</h2>
-    <div style="position: relative; height:60vh; width:100%;">
-        <canvas id="profitChart"></canvas>
-    </div>
-</div>
+        .elx-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 12.5px;
+            letter-spacing: 3px;
+            color: var(--gold-deep);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+            .elx-eyebrow::before,
+            .elx-eyebrow::after {
+                content: "";
+                width: 30px;
+                height: 1px;
+                background: var(--gold-soft);
+            }
 
-<script>
-    const perfumes = @Html.Raw(Json.Serialize(Model.Select(m => m.Name)));
-    const profitsInEgp = @Html.Raw(Json.Serialize(Model.Select(m => Math.Round((decimal)m.Profit * exchangeRate))));
+        .elx-title {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: clamp(30px, 4.4vw, 46px);
+            font-weight: 600;
+            margin: 0 0 10px;
+            color: var(--ink);
+            letter-spacing: .2px;
+        }
 
-    const ctx = document.getElementById('profitChart').getContext('2d');
+            .elx-title span {
+                font-style: normal;
+                font-weight: 700;
+            }
 
-    // ألوان هادئة ومتناسقة (Nude & Earthy tones)
-    const softCoffee = '#bc9c82';
-    const deepMocha = '#4a3728';
+        .elx-sub {
+            max-width: 640px;
+            margin: 0 auto;
+            color: var(--text-dim);
+            font-size: 15px;
+            line-height: 1.85;
+        }
 
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: perfumes,
-            datasets: [{
-                label: 'Estimated Profit (EGP)',
-                data: profitsInEgp,
-                backgroundColor: 'rgba(188, 156, 130, 0.4)', // لون نود هادي شفاف
-                borderColor: softCoffee,
-                borderWidth: 1.5,
-                hoverBackgroundColor: 'rgba(74, 55, 40, 0.7)', // يغمق عند الوقوف عليه
-                borderRadius: 12,
-                barPercentage: 0.5
-            }]
-        },
-        plugins: [ChartDataLabels],
-        options: {
-            maintainAspectRatio: false, // عشان نتحكم في الطول بحرية
-            responsive: true,
-            plugins: {
-                legend: { display: false }, // أخفينا الـ Legend عشان نخلي الشكل أنضف (Clean Look)
-                datalabels: {
-                    anchor: 'end',
-                    align: 'top',
-                    offset: 10,
-                    formatter: (value) => value.toLocaleString(),
-                    font: { size: 13, weight: '600', family: 'Segoe UI' },
-                    color: deepMocha
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grace: '15%',
-                    grid: { color: 'rgba(0, 0, 0, 0.03)' },
-                    ticks: {
-                        color: softCoffee,
-                        font: { size: 12 },
-                        callback: (value) => value.toLocaleString()
-                    }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: {
-                        color: deepMocha,
-                        font: { size: 12, weight: '500' }
-                    }
-                }
+        .elx-kpis {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 260px));
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 46px;
+        }
+
+        .elx-kpi {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            text-align: center;
+        }
+
+        .elx-kpi-label {
+            font-size: 12px;
+            letter-spacing: .3px;
+            color: var(--text-dim);
+            margin: 0 0 10px;
+            text-transform: uppercase;
+        }
+
+        .elx-kpi-value {
+            font-size: 25px;
+            font-weight: 800;
+            margin: 0;
+            color: var(--gold-deep);
+            font-variant-numeric: tabular-nums;
+        }
+
+            .elx-kpi-value small {
+                font-size: 12.5px;
+                font-weight: 600;
+                color: var(--text-dim);
+                margin-inline-start: 4px;
+            }
+
+        .elx-kpi--split {
+            display: flex;
+            gap: 18px;
+        }
+
+            .elx-kpi--split div {
+                flex: 1;
+            }
+
+            .elx-kpi--split .up {
+                color: var(--gold-deep);
+            }
+
+            .elx-kpi--split .down {
+                color: var(--wine);
+            }
+
+        .elx-section-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin: 0 0 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .elx-section-title {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: 21px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--ink);
+        }
+
+        .elx-section-note {
+            font-size: 12.5px;
+            color: var(--text-dim);
+            margin: 0;
+        }
+
+        .elx-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 50px;
+        }
+
+        .elx-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 20px 20px 8px;
+        }
+
+        .elx-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+            gap: 10px;
+        }
+
+        .elx-card-title {
+            font-size: 16.5px;
+            font-weight: 700;
+            margin: 0 0 6px;
+            color: var(--ink);
+        }
+
+        .elx-card-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .elx-tag {
+            font-size: 10.5px;
+            padding: 3px 9px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+
+        .elx-card-profit {
+            text-align: right;
+            flex: none;
+        }
+
+            .elx-card-profit b {
+                display: block;
+                font-size: 17px;
+                color: var(--gold-deep);
+                font-variant-numeric: tabular-nums;
+            }
+
+            .elx-card-profit span {
+                font-size: 10.5px;
+                color: var(--text-dim);
+                text-transform: uppercase;
+            }
+
+        .elx-size-row {
+            padding: 10px 0 12px;
+            border-top: 1px dashed var(--line);
+        }
+
+            .elx-size-row:first-of-type {
+                border-top: none;
+            }
+
+        .elx-size-top {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .elx-size-name {
+            font-size: 13.5px;
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        .elx-size-figures {
+            font-size: 12px;
+            color: var(--text-dim);
+            display: flex;
+            gap: 10px;
+        }
+
+            .elx-size-figures b {
+                color: var(--gold-deep);
+                font-weight: 700;
+            }
+
+        .elx-bar-track {
+            height: 6px;
+            border-radius: 999px;
+            background: var(--panel-soft);
+            overflow: hidden;
+        }
+
+        .elx-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--gold-soft), var(--gold-deep));
+        }
+
+        .elx-table-wrap {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        table.elx-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+        }
+
+        .elx-table thead th {
+            text-align: left;
+            padding: 14px 18px;
+            font-size: 11.5px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: .7px;
+            border-bottom: 1px solid var(--line);
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+            .elx-table thead th:hover {
+                color: var(--gold-deep);
+            }
+
+            .elx-table thead th.sort-active {
+                color: var(--gold-deep);
+            }
+
+            .elx-table thead th .arrow {
+                font-size: 10px;
+                margin-left: 4px;
+                opacity: .7;
+            }
+
+        .elx-table tbody td {
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: middle;
+        }
+
+        .elx-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .elx-table tbody tr:hover {
+            background: var(--panel-soft);
+        }
+
+        .elx-table tbody tr.is-top {
+            box-shadow: inset 3px 0 0 var(--gold);
+        }
+
+        .elx-table tbody tr.is-weak {
+            box-shadow: inset 3px 0 0 var(--wine);
+        }
+
+        .elx-perfume-cell b {
+            display: block;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .elx-perfume-cell span {
+            font-size: 11.5px;
+            color: var(--text-dim);
+        }
+
+        .elx-profit-cell {
+            font-weight: 800;
+            color: var(--gold-deep);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .elx-units-cell {
+            min-width: 140px;
+        }
+
+            .elx-units-cell .elx-bar-track {
+                margin-top: 5px;
+                width: 100px;
+            }
+
+        .elx-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-dim);
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+        }
+
+        .elx-foot {
+            margin-top: 34px;
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.9;
+            max-width: 720px;
+        }
+
+        @@media (max-width: 900px) {
+            .elx-kpis {
+                grid-template-columns: repeat(2, minmax(0, 260px));
             }
         }
-    });
-</script>
+
+        @@media (max-width: 560px) {
+            .elx-kpis {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .elx-dash {
+                padding: 34px 5vw 60px;
+            }
+
+            .elx-card-head {
+                flex-direction: column;
+            }
+
+            .elx-card-profit {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body style="margin:0;">
+    <div class="elx-dash">
+
+        <div class="elx-hero">
+            <div class="elx-eyebrow">Analytics</div>
+            <h1 class="elx-title">Profit <span>Forecast</span> Dashboard</h1>
+            <p class="elx-sub">
+                Machine-learning profit predictions for every perfume and every size,
+                with predicted units sold shown as a bar for each size.
+            </p>
+        </div>
+
+        @if (items.Count == 0)
+        {
+            <div class="elx-empty">Not enough data yet to generate forecasts. Add perfumes, sizes, and orders first.</div>
+        }
+        else
+        {
+            <div class="elx-kpis">
+                <div class="elx-kpi">
+                    <p class="elx-kpi-label">Total predicted profit</p>
+                    <p class="elx-kpi-value">$@totalPredictedProfit.ToString("N0") <small>EGP</small></p>
+                </div>
+                <div class="elx-kpi">
+                    <p class="elx-kpi-label">Total units sold</p>
+                    <p class="elx-kpi-value">@totalUnitsSold.ToString("N0") <small>units</small></p>
+                </div>
+                <div class="elx-kpi">
+                    <p class="elx-kpi-label">Top-performing item</p>
+                    <p class="elx-kpi-value" style="font-size:16px;">@(topPerformer?.PerfumeName ?? "—")<small> @(topPerformer?.Size)</small></p>
+                </div>
+            </div>
+
+            <div class="elx-section-head">
+                <h2 class="elx-section-title">Profit &amp; predicted units by perfume &amp; size</h2>
+                <p class="elx-section-note">Bar length = predicted units sold, relative to the top-selling size store-wide</p>
+            </div>
+
+            <div class="elx-grid">
+                @foreach (var group in groups)
+                {
+                    var perfumeProfit = group.Sum(i => i.PredictedProfit);
+                    <div class="elx-card">
+                        <div class="elx-card-head">
+                            <div>
+                                <p class="elx-card-title">@group.Key.PerfumeName</p>
+                                <div class="elx-card-tags">
+                                    <span class="elx-tag">@group.Key.CategoryName</span>
+                                    <span class="elx-tag">@group.Key.Gender</span>
+                                </div>
+                            </div>
+                            <div class="elx-card-profit">
+                                <b>$@perfumeProfit.ToString("N0")</b>
+                                <span>predicted</span>
+                            </div>
+                        </div>
+
+                        @foreach (var item in group.OrderByDescending(i => i.PredictedQuantity))
+                        {
+                            var barPct = Math.Round(item.PredictedQuantity * 100.0 / maxQty, 1);
+                            <div class="elx-size-row">
+                                <div class="elx-size-top">
+                                    <span class="elx-size-name">@item.Size</span>
+                                    <span class="elx-size-figures">
+                                        <span><b>@item.PredictedQuantity.ToString("N0")</b> units</span>
+                                        <span>$@item.PredictedProfit.ToString("N0")</span>
+                                    </span>
+                                </div>
+                                <div class="elx-bar-track">
+                                    <div class="elx-bar-fill" style="width:@(barPct.ToString(System.Globalization.CultureInfo.InvariantCulture))%;"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="elx-section-head">
+                <h2 class="elx-section-title">Full breakdown</h2>
+                <p class="elx-section-note">Click any column header to sort</p>
+            </div>
+
+            <div class="elx-table-wrap">
+                <table class="elx-table" id="elxTable">
+                    <thead>
+                        <tr>
+                            <th data-key="perfume">Perfume <span class="arrow"></span></th>
+                            <th data-key="size">Size <span class="arrow"></span></th>
+                            <th data-key="category">Category <span class="arrow"></span></th>
+                            <th data-key="units">Predicted units <span class="arrow">▼</span></th>
+                            <th data-key="profit" class="sort-active">Predicted profit <span class="arrow"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in items)
+                        {
+                            var rowClass = item == topPerformer ? "is-top" : item == weakestPerformer ? "is-weak" : "";
+                            var barPct = Math.Round(item.PredictedQuantity * 100.0 / maxQty, 1);
+                            <tr class="@rowClass"
+                                data-perfume="@item.PerfumeName" data-size="@item.Size" data-category="@item.CategoryName"
+                                data-units="@item.PredictedQuantity" data-profit="@item.PredictedProfit">
+                                <td class="elx-perfume-cell">
+                                    <b>@item.PerfumeName</b>
+                                    <span>@item.Gender</span>
+                                </td>
+                                <td>@item.Size</td>
+                                <td>@item.CategoryName</td>
+                                <td class="elx-units-cell">
+                                    @item.PredictedQuantity.ToString("N0")
+                                    <div class="elx-bar-track">
+                                        <div class="elx-bar-fill" style="width:@(barPct.ToString(System.Globalization.CultureInfo.InvariantCulture))%;"></div>
+                                    </div>
+                                </td>
+                                <td class="elx-profit-cell">$@item.PredictedProfit.ToString("N0")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="elx-foot">
+                Predicted units sold and predicted profit come directly from the store's prediction model.
+                Bars are scaled against the highest predicted-units size across the whole catalogue, so you can
+                compare demand between sizes and between perfumes at a glance.
+            </p>
+        }
+    </div>
+
+    <script>
+        (function () {
+            var table = document.getElementById('elxTable');
+            if (!table) return;
+            var tbody = table.querySelector('tbody');
+            var headers = table.querySelectorAll('th[data-key]');
+            var state = { key: 'units', dir: -1 };
+
+            function sortRows(key, dir) {
+                var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+                var numeric = ['units', 'profit'].indexOf(key) !== -1;
+                rows.sort(function (a, b) {
+                    var av = a.getAttribute('data-' + key);
+                    var bv = b.getAttribute('data-' + key);
+                    if (numeric) { av = parseFloat(av); bv = parseFloat(bv); }
+                    if (av < bv) return -1 * dir;
+                    if (av > bv) return 1 * dir;
+                    return 0;
+                });
+                rows.forEach(function (r) { tbody.appendChild(r); });
+            }
+
+            headers.forEach(function (th) {
+                th.addEventListener('click', function () {
+                    var key = th.getAttribute('data-key');
+                    var dir = (state.key === key) ? -state.dir : -1;
+                    state = { key: key, dir: dir };
+                    headers.forEach(function (h) {
+                        h.classList.remove('sort-active');
+                        var a = h.querySelector('.arrow'); if (a) a.textContent = '';
+                    });
+                    th.classList.add('sort-active');
+                    var arrowEl = th.querySelector('.arrow');
+                    if (arrowEl) arrowEl.textContent = dir === 1 ? '▲' : '▼';
+                    sortRows(key, dir);
+                });
+            });
+
+            sortRows('units', -1);
+        })();
+    </script>
+</body>
+</html>

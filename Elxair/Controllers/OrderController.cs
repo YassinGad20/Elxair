@@ -7,28 +7,30 @@ namespace Elxair.Controllers
     {
         private readonly OrderService os;
         private readonly PaymentService paymentService;
+        private readonly UserService us;
 
-        // constructor واحد بس بياخد الاتنين
-        public OrderController(OrderService os, PaymentService paymentService)
+        public OrderController(
+            OrderService os,
+            PaymentService paymentService,
+            UserService us)
         {
             this.os = os;
             this.paymentService = paymentService;
+            this.us = us;
         }
 
         public IActionResult Checkout()
         {
-            int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null) return RedirectToAction("Login", "Account");
             return View();
         }
 
         [HttpPost]
-        public IActionResult CreateOrder(string fullName, string phone,
-                                         string governorate, string address)
+        public IActionResult CreateOrder(
+            string fullName,
+            string phone,
+            string governorate,
+            string address)
         {
-            int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null) return RedirectToAction("Login", "Account");
-
             if (string.IsNullOrWhiteSpace(fullName) ||
                 string.IsNullOrWhiteSpace(phone) ||
                 string.IsNullOrWhiteSpace(governorate) ||
@@ -38,8 +40,12 @@ namespace Elxair.Controllers
                 return RedirectToAction("Checkout");
             }
 
-            string customerName = HttpContext.Session.GetString("UserName") ?? fullName;
-            int orderId = os.CreateOrder(userId.Value);
+            int userId = us.GetCurrentUserId();
+
+            string customerName =
+                HttpContext.Session.GetString("UserName") ?? fullName;
+
+            int orderId = os.CreateOrder();
 
             if (orderId == 0)
             {
@@ -47,34 +53,40 @@ namespace Elxair.Controllers
                 return RedirectToAction("Index", "Cart");
             }
 
-            var order = os.GetUserOrders(userId.Value)
+            var order = os.GetUserOrders()
                           .FirstOrDefault(o => o.Id == orderId);
+
             decimal amount = order?.TotalPrice ?? 0;
 
-            paymentService.CreatePayment(orderId, userId.Value, customerName,
-                             amount, fullName, phone, governorate, address);
+            paymentService.CreatePayment(
+                orderId,
+                userId,
+                customerName,
+                amount,
+                fullName,
+                phone,
+                governorate,
+                address);
 
             TempData["Success"] = "Order placed successfully!";
+
             return RedirectToAction("Index");
         }
 
         public IActionResult Index()
         {
-            int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null) return RedirectToAction("Login", "Account");
-            var orders = os.GetUserOrders(userId.Value);
+            var orders = os.GetUserOrders();
+
             return View(orders);
         }
 
         public IActionResult Details(int id)
         {
-            int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null) return RedirectToAction("Login", "Account");
-
-            var order = os.GetUserOrders(userId.Value)
+            var order = os.GetUserOrders()
                           .FirstOrDefault(o => o.Id == id);
 
-            if (order == null) return NotFound();
+            if (order == null)
+                return NotFound();
 
             return View(order);
         }

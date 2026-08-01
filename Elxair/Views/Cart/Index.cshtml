@@ -1,7 +1,16 @@
-﻿@model Elxair.Models.Cart
+﻿@using Elxair.Models
+@using Elxair.ViewModels
+
+@model CartVM
 @{
     ViewData["Title"] = "Your Shopping Bag";
-    var grandTotal = Model.Items?.Sum(i => i.Quantity * i.PerfumeSize.Price) ?? 0;
+
+    decimal grandTotal = 0;
+
+    foreach (var item in Model.Items)
+    {
+        grandTotal += Model.FinalPrices[item.PerfumeSize.Id] * item.Quantity;
+    }
 }
 
 <section class="elx-section">
@@ -64,8 +73,47 @@
                                         </td>
 
                                         <!-- PRICE -->
-                                        <td>EGP @item.PerfumeSize.Price</td>
+                                        <td>
 
+                                            @{
+                                                var promotion = Model.Promotions[item.PerfumeSize.Id];
+                                            }
+
+                                            @if (promotion != null)
+                                            {
+                                                <span style="text-decoration:line-through;color:gray;">
+                                                    EGP @item.PerfumeSize.Price
+                                                </span>
+
+                                                <br />
+
+                                                <strong style="color:#b8860b;">
+                                                    EGP @Model.FinalPrices[item.PerfumeSize.Id]
+                                                </strong>
+
+                                                <br />
+
+                                                @if (promotion.PromotionType == PromotionType.Percentage)
+                                                {
+                                                    <span class="badge bg-danger">
+                                                        @Model.DiscountPercentages[item.PerfumeSize.Id]% OFF
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">
+                                                        @promotion.Value EGP OFF
+                                                    </span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span>
+                                                    EGP @item.PerfumeSize.Price
+                                                </span>
+                                            }
+
+                                        </td>
                                         <!-- QUANTITY -->
                                         <td>
                                             <span class="px-3 py-1" style="background:#fcfaf9; border:1px solid #eee;">
@@ -75,7 +123,7 @@
 
                                         <!-- TOTAL -->
                                         <td class="text-end" style="font-weight:600; color:#2c1712;">
-                                            EGP @(item.Quantity * item.PerfumeSize.Price)
+                                            EGP @(Model.FinalPrices[item.PerfumeSize.Id] * item.Quantity)
                                         </td>
 
                                         <!-- REMOVE -->
@@ -134,7 +182,6 @@
                         </div>
 
                         <form asp-controller="Order" asp-action="CreateOrder" method="post">
-                            <input type="hidden" name="userId" value="@Model.UserId" />
 
                             <button type="submit"
                                     class="btn btn-dark w-100 py-3"

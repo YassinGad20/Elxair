@@ -38,6 +38,13 @@ namespace Elxair.Models
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
 
+        public DbSet<Review> Reviews { get; set; }
+
+        public DbSet<Promotion> Promotions { get; set; }
+
+        public DbSet<PromotionPerfumeSize> PromotionPerfumeSizes { get; set; }
+
+        public DbSet<Report> Reports { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -61,6 +68,22 @@ namespace Elxair.Models
                 .WithMany(u => u.Orders)
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PromotionPerfumeSize>()
+                .HasOne(x => x.Promotion)
+                .WithMany(x => x.PromotionPerfumeSizes)
+                .HasForeignKey(x => x.PromotionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PromotionPerfumeSize>()
+                .HasOne(x => x.PerfumeSize)
+                .WithMany(x => x.PromotionPerfumeSizes)
+                .HasForeignKey(x => x.PerfumeSizeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PromotionPerfumeSize>()
+                .HasIndex(x => new { x.PromotionId, x.PerfumeSizeId })
+                .IsUnique();
         }
 
 

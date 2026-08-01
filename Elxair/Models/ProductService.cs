@@ -1,14 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Elxair.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Elxair.Models
 {
     public class ProductService
     {
         private readonly ElxairContext db;
+        private readonly IPromotionService promotionService;
 
-        public ProductService(ElxairContext db)
+        public ProductService(
+        ElxairContext db,
+        IPromotionService promotionService)
         {
             this.db = db;
+            this.promotionService = promotionService;
         }
         public List<Perfume> SearchAndFilter(string? search, string? gender, int? categoryId)
         {
@@ -36,18 +41,32 @@ namespace Elxair.Models
         }
         public List<Perfume> GetAllPerfumes()
         {
-            return db.Perfumes
-                .Include(p => p.Category)
-                .Include(p => p.Sizes)
-                .ToList();
+            var perfumes = db.Perfumes
+            .Include(p => p.Category)
+            .Include(p => p.Sizes)
+            .ToList();
+
+            foreach (var perfume in perfumes)
+            {
+                ApplyPromotionData(perfume);
+            }
+
+            return perfumes;
         }
 
         public Perfume? GetPerfume(int id)
         {
-            return db.Perfumes
-                .Include(p => p.Category)
-                .Include(p => p.Sizes)
-                .FirstOrDefault(p => p.Id == id);
+            var perfume = db.Perfumes
+            .Include(p => p.Category)
+            .Include(p => p.Sizes)
+            .FirstOrDefault(p => p.Id == id);
+
+            if (perfume != null)
+            {
+                ApplyPromotionData(perfume);
+            }
+
+            return perfume;
         }
 
         public void AddPerfume(Perfume perfume)
@@ -89,13 +108,54 @@ namespace Elxair.Models
         }
         public List<Perfume> GetRecommendations(Perfume current)
         {
-            return db.Perfumes
-                .Where(p =>
-                    p.Id != current.Id &&
-                    p.Gender == current.Gender &&
-                    p.CategoryId == current.CategoryId)
-                .Take(4)
-                .ToList();
+            var perfumes = db.Perfumes
+            .Include(p => p.Category)
+            .Include(p => p.Sizes)
+            .Where(p =>
+                p.Id != current.Id &&
+                p.Gender == current.Gender &&
+                p.CategoryId == current.CategoryId)
+            .Take(4)
+            .ToList();
+
+            foreach (var perfume in perfumes)
+            {
+                ApplyPromotionData(perfume);
+            }
+
+            return perfumes;
         }
+
+        private void ApplyPromotionData(Perfume perfume)
+        {
+            if (perfume.Sizes == null || !perfume.Sizes.Any())
+                return;
+
+            var firstSize = perfume.Sizes.OrderBy(s => s.Price).First();
+
+            perfume.DisplayPrice = firstSize.Price;
+            perfume.HasPromotion = false;
+
+            foreach (var size in perfume.Sizes)
+            {
+                var promotion = promotionService.GetActivePromotion(size);
+
+                if (promotion != null)
+                {
+                    var discountedPrice = promotionService.GetDiscountedPrice(size);
+
+                    if (!perfume.HasPromotion || discountedPrice < perfume.DisplayPrice)
+                    {
+                        perfume.HasPromotion = true;
+                        perfume.OldPrice = size.Price;
+                        perfume.DisplayPrice = discountedPrice;
+                        perfume.DiscountPercentage =
+                            promotionService.GetDiscountPercentage(size);
+                    }
+                }
+            }
+        }
+
+
     }
 }
